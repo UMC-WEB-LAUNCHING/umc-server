@@ -28,10 +28,12 @@ public class SignUpFormValidator implements Validator {
         SignUpForm form = (SignUpForm) target ;
         Optional<Member> optional = memberRepository.findByUsername(form.getUsername());
         if(optional.isPresent()){
-            errors.rejectValue("username" ,"duplicate.username", "이미 사용중이거나 탈퇴한 아이디입니다.");
+            errors.rejectValue("username" ,"duplicate.username",
+                    "이미 사용중이거나 탈퇴한 아이디입니다.");
         }
         if(!form.getPassword().equals(form.getPasswordCheck())){
-            errors.rejectValue("passwordCheck" ,"Passwords do not match", "비밀번호가 일치하지 않습니다.");
+            errors.rejectValue("passwordCheck" ,"Passwords do not match",
+                    "비밀번호가 일치하지 않습니다.");
         }
 
     }

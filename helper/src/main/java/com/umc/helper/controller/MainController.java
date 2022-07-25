@@ -22,15 +22,19 @@ import javax.validation.Valid;
 public class MainController {
 
     private final MemberRepository memberRepository;
-
     private final MemberService memberService;
 
-    @GetMapping("/login")
+    @GetMapping("/")
+    public String index(){
+        return "index";
+    }
+
+    @GetMapping("/member/login")
     public String loginPage() {
         return "member/loginForm";
     }
 
-    @GetMapping("/signup")
+    @GetMapping("/member/signup")
     public String signupForm(Model model) {
         model.addAttribute("signUpForm", new SignUpForm());
         return "member/signUpForm";

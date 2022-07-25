@@ -9,8 +9,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+
 @Entity
-@Getter
+@Data
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor
 public class Member {
@@ -29,8 +30,9 @@ public class Member {
 
     private LocalDateTime lastLoginDatetime;
 
+    private String provider;
+
     @Enumerated(EnumType.STRING)
     private MemberType type;
-
 
 }
