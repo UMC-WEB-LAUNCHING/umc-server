@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 public class Member {
 
     @Generated

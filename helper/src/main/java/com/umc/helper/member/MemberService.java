@@ -21,8 +21,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-
     public Member createNewUser(String name, String email){
         Member member = Member.builder()
                 .username(name)
