@@ -1,7 +1,7 @@
-package com.umc.helper.dto;
+package com.umc.helper.file;
 
 
-import com.umc.helper.domain.Files;
+import com.umc.helper.file.File;
 import lombok.*;
 
 @Getter
@@ -10,13 +10,13 @@ import lombok.*;
 @NoArgsConstructor
 public class FileDto {
 
-    private int id;
+    private Long id;
     private String origFilename;
     private String filename;
     private String filePath;
 
-    public Files toEntity() {
-        Files build = Files.builder()
+    public File toEntity() {
+        File build = File.builder()
                 .id(id)
                 .origFilename(origFilename)
                 .filename(filename)
@@ -26,7 +26,7 @@ public class FileDto {
     }
 
     @Builder
-    public FileDto(int id, String origFilename, String filename, String filePath) {
+    public FileDto(Long id, String origFilename, String filename, String filePath) {
         this.id = id;
         this.origFilename = origFilename;
         this.filename = filename;

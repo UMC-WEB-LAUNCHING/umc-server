@@ -1,4 +1,4 @@
-package com.umc.helper;
+package com.umc.helper.file;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

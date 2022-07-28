@@ -1,8 +1,8 @@
 package com.umc.helper.controller;
 
-import com.umc.helper.MD5Generator;
-import com.umc.helper.dto.FileDto;
-import com.umc.helper.service.FileService;
+import com.umc.helper.file.MD5Generator;
+import com.umc.helper.file.FileDto;
+import com.umc.helper.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 @Controller
@@ -50,7 +49,7 @@ public class FileController {
 
         fileDto.setFilePath(filePath);
 
-        int fileId= fileService.saveFile(fileDto);
+        Long fileId= fileService.saveFile(fileDto);
         return "redirect:/";
     }
 

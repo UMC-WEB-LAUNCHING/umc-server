@@ -1,8 +1,5 @@
-package com.umc.helper.service;
+package com.umc.helper.file;
 
-import com.umc.helper.domain.Files;
-import com.umc.helper.dto.FileDto;
-import com.umc.helper.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +14,15 @@ public class FileService {
     private FileRepository fileRepository;
     Logger logger= LoggerFactory.getLogger(FileService.class);
     @Transactional
-    public int saveFile(FileDto fileDto) {
+    public Long saveFile(FileDto fileDto) {
         logger.info(">>fileDto:{}",fileDto);
 
-        return fileRepository.save(fileDto.toEntity()).getFileIdx();
+        return fileRepository.save(fileDto.toEntity()).getId();
     }
 
     @Transactional
-    public FileDto getFile(int id) {
-        Files file = fileRepository.findById(id).get();
+    public FileDto getFile(Long id) {
+        File file = fileRepository.findById(id).get();
 
         FileDto fileDto = FileDto.builder()
                 .id(id)

@@ -1,13 +1,14 @@
 package com.umc.helper.member;
 
 
+import com.umc.helper.folder.Folder;
+import com.umc.helper.team.Team;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -18,6 +19,7 @@ public class Member {
 
     @Generated
     @Id
+    @Column(name="member_id")
     private Long id;
 
     private String email;
@@ -34,5 +36,15 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private MemberType type;
+
+    @OneToMany(mappedBy = "member",cascade=CascadeType.ALL)
+    private List<Team> teams=new ArrayList<>();
+
+    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
+    private List<Folder> folders=new ArrayList<>();
+
+    //==연관관계 편의 메서드==//
+
+
 
 }
