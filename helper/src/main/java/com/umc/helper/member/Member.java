@@ -3,6 +3,7 @@ package com.umc.helper.member;
 
 import com.umc.helper.folder.Folder;
 import com.umc.helper.team.Team;
+import com.umc.helper.team.TeamMember;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor @AllArgsConstructor
 public class Member {
 
-    @Generated
+    @GeneratedValue
     @Id
     @Column(name="member_id")
     private Long id;
@@ -38,12 +39,10 @@ public class Member {
     private MemberType type;
 
     @OneToMany(mappedBy = "member",cascade=CascadeType.ALL)
-    private List<Team> teams=new ArrayList<>();
+    private List<TeamMember> teams=new ArrayList<>();
 
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
     private List<Folder> folders=new ArrayList<>();
-
-    //==연관관계 편의 메서드==//
 
 
 

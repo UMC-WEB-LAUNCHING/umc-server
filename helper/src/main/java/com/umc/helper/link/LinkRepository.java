@@ -1,9 +1,32 @@
 package com.umc.helper.link;
 
-import com.umc.helper.member.Member;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.umc.helper.link.model.Link;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Optional;
+
 @Repository
-public interface LinkRepository extends JpaRepository<Link, Long> {
+@RequiredArgsConstructor
+public class LinkRepository {
+
+    private final EntityManager em;
+
+    public void save(Link link){
+        em.persist(link);
+    }
+
+    public Link findById(Long linkId){
+        return em.find(Link.class,linkId);
+    }
+
+    public List<Link> findAllByFolderId(Long folderId){
+        return em.createQuery(
+                "select l from Link l"+
+                            " join fetch l.folder f",Link.class)
+                .getResultList();
+    }
+
 }

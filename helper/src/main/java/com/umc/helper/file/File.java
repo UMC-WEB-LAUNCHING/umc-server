@@ -34,12 +34,12 @@ public class File {
     @JoinColumn(name="member_id")
     private Member member; // uploader
 
-//    @Builder
-//    public File(Long id, String origFilename, String filename, String filePath) {
-//        this.id = id;
-//        this.originalFileName = origFilename;
-//        this.fileName = filename;
-//        this.filePath = filePath;
-//    }
+    @Builder
+    public File(Long id, String origFilename, String filename, String filePath) {
+        this.id = id;
+        this.originalFileName = origFilename;
+        this.fileName = filename;
+        this.filePath = filePath;
+    }
 
 }

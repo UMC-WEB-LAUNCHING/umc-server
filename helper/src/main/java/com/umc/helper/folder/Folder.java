@@ -1,12 +1,9 @@
 package com.umc.helper.folder;
 
-import com.umc.helper.link.Link;
+import com.umc.helper.link.model.Link;
 import com.umc.helper.member.Member;
 import com.umc.helper.team.Team;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter @Setter
+@NoArgsConstructor
 @Table(name="folders")
 public class Folder {
 
@@ -46,5 +43,21 @@ public class Folder {
 //    @OneToMany(mappedBy="folder")
 //    private List<Memo> memos=new ArrayList<>();
 
+//    @OneToMany(mappedBy="folder")
+//    private List<Image> images=new ArrayList<>();
+//
+//    @OneToMany(mappedBy="folder")
+//    private List<Video> memos=new ArrayList<>();
 
+
+    //==연관관계 편의 메서드==//
+    public void setMember(Member member){
+        this.member=member;
+        member.getFolders().add(this);
+    }
+
+    public void setTeam(Team team){
+        this.team=team;
+        team.getFolders().add(this);
+    }
 }
