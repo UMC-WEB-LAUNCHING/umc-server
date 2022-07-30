@@ -1,5 +1,6 @@
 package com.umc.helper.folder;
 
+import com.umc.helper.file.model.File;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.member.Member;
 import com.umc.helper.team.Team;
@@ -37,18 +38,14 @@ public class Folder {
     @OneToMany(mappedBy="folder")
     private List<Link> links=new ArrayList<>();
 
-//    @OneToMany(mappedBy="folder")
-//    private List<File> files=new ArrayList<>();
+    @OneToMany(mappedBy="folder")
+    private List<File> files=new ArrayList<>();
 //
 //    @OneToMany(mappedBy="folder")
 //    private List<Memo> memos=new ArrayList<>();
 
 //    @OneToMany(mappedBy="folder")
 //    private List<Image> images=new ArrayList<>();
-//
-//    @OneToMany(mappedBy="folder")
-//    private List<Video> memos=new ArrayList<>();
-
 
     //==연관관계 편의 메서드==//
     public void setMember(Member member){

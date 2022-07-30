@@ -9,7 +9,5 @@ import lombok.*;
 public class PostLinkResponse {
 
     private Long linkId;
-//    private Member member;
-//    private Folder folder;
 
 }

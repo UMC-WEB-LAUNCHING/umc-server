@@ -1,5 +1,9 @@
 package com.umc.helper.file;
 
+import com.umc.helper.config.BaseResponse;
+import com.umc.helper.file.model.PostFileRequest;
+import com.umc.helper.file.model.PostFileResponse;
+import com.umc.helper.link.model.PostLinkRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,43 +15,31 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class FileController {
 
     private Logger logger= LoggerFactory.getLogger(FileController.class);
 
-    private FileService fileService;
+    private final FileService fileService;
 
-    @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile files) throws IOException, NoSuchAlgorithmException {
-        String origFilename = files.getOriginalFilename();
-        String filename = new MD5Generator(origFilename).toString();
-        /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
-        String savePath = System.getProperty("user.dir") + "\\files";
-        /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
-        if (!new File(savePath).exists()) {
-            try {
-                new File(savePath).mkdir();
-            } catch (Exception e) {
-                e.getStackTrace();
-            }
-        }
-        String filePath = savePath + "\\" + filename;
-        logger.info("filePath: {}",filePath);
-        files.transferTo(new File(filePath));
+    // file 조회
+//    @GetMapping("folder/{folderId}/files")
+//    public BaseResponse<List<GetFilesResponse>> getFiles(@PathVariable("folderId") Long folderId){
+//
+//
+//    }
+   // file upload
+    @PostMapping("folder/file") //BaseResponse<PostFileResponse>
+    public BaseResponse<PostFileResponse> uploadFile(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam("folderId") Long folderId, @RequestParam("memberId") Long memberId){
+        PostFileRequest postFileReq=new PostFileRequest(multipartFile,folderId,memberId);
+        PostFileResponse postFileRes=fileService.uploadFile(postFileReq);
 
-        FileDto fileDto = new FileDto();
-        fileDto.setOrigFilename(origFilename);
-        logger.info("origFilename: {}",origFilename);
+        return new BaseResponse<>(postFileRes);
 
-        fileDto.setFilename(filename);
-        logger.info("filename: {}",filename);
 
-        fileDto.setFilePath(filePath);
-
-        Long fileId= fileService.saveFile(fileDto);
-        return "redirect:/";
     }
+    // file 수정
 
+    // file 삭제
 }

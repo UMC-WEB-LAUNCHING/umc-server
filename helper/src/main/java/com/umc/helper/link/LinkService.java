@@ -1,6 +1,10 @@
 package com.umc.helper.link;
 
+import com.umc.helper.folder.Folder;
+import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.link.model.*;
+import com.umc.helper.member.Member;
+import com.umc.helper.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -19,6 +24,8 @@ public class LinkService {
 
     //private final LinkRepositoryJpa linkRepositoryJpa;
     private final LinkRepository linkRepository;
+    private final FolderRepository folderRepository;
+    private final MemberRepository memberRepository;
     Logger log= LoggerFactory.getLogger(LinkService.class);
 
     /**
@@ -36,16 +43,35 @@ public class LinkService {
     }
 
     /**
-     *  링크 업로드
+     *  링크 업로드 v1 되는 코드
      */
+//    @Transactional
+//    public PostLinkResponse uploadLink(Link link){
+//        linkRepository.save(link);
+//
+//        return new PostLinkResponse(linkRepository.findById(link.getId()).getId());
+//        //return new PostLinkResponse(linkRepositoryJpa.findById(link.getId()).get().getId());
+//    }
+
+    /**
+     *  링크 업로드 v2 - controller에 너무 많은 로직 있는 거 같아서 service로 옮김
+     */
+
     @Transactional
-    public PostLinkResponse uploadLink(Link link){
+    public PostLinkResponse uploadLink(PostLinkRequest postLinkReq){
+        Optional<Folder> folder=folderRepository.findById(postLinkReq.getFolderId());
+        Optional<Member> member=memberRepository.findById(postLinkReq.getMemberId());
+
+        Link link=new Link();
+        link.setName(postLinkReq.getName());
+        link.setUrl(postLinkReq.getUrl());
+        link.setFolder(folder.get());
+        link.setMember(member.get());
+
         linkRepository.save(link);
 
         return new PostLinkResponse(linkRepository.findById(link.getId()).getId());
-        //return new PostLinkResponse(linkRepositoryJpa.findById(link.getId()).get().getId());
     }
-
     /**
      *  링크 변경 - 제목
      */

@@ -1,10 +1,11 @@
-package com.umc.helper.file;
+package com.umc.helper.file.model;
 
 import com.umc.helper.folder.Folder;
 import com.umc.helper.member.Member;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,9 +23,13 @@ public class File {
 
     private String fileName;
 
-    private String filePath;
+    private String filePath; // storeFileUrl: 저장된 파일의 URL
 
-    private String volume;
+    private Long volume;
+
+//    private LocalDateTime uploadDate;
+//
+//    private LocalDateTime lastModifiedDate;
 
     @ManyToOne
     @JoinColumn(name="folder_id")
@@ -34,12 +39,15 @@ public class File {
     @JoinColumn(name="member_id")
     private Member member; // uploader
 
-    @Builder
-    public File(Long id, String origFilename, String filename, String filePath) {
-        this.id = id;
-        this.originalFileName = origFilename;
-        this.fileName = filename;
-        this.filePath = filePath;
+    //==연관관계 편의 메서드==//
+    public void setFolder(Folder folder){
+        this.folder=folder;
+        folder.getFiles().add(this);
     }
+
+    public void setMember(Member member){
+        this.member=member;
+    }
+
 
 }
