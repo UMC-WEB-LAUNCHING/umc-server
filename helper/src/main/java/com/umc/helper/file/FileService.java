@@ -4,11 +4,11 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.umc.helper.file.model.File;
-import com.umc.helper.file.model.PostFileRequest;
-import com.umc.helper.file.model.PostFileResponse;
+import com.umc.helper.file.model.*;
 import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.link.model.Link;
+import com.umc.helper.link.model.PatchLinkStatusResponse;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly=true)
@@ -39,6 +43,23 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+
+    /**
+     *  해당 폴더 모든 파일 조회
+     */
+    @Transactional
+    public List<GetFilesResponse> retrieveFiles(Long folderId){
+
+        List<File> files=fileRepository.findAllByFolderId(folderId);
+        List<GetFilesResponse> result=files.stream()
+                .map(f->new GetFilesResponse(f))
+                .collect(toList());
+
+        return result;
+    }
+    /**
+     *  파일 업로드
+     */
     @Transactional
     public PostFileResponse uploadFile(PostFileRequest postFileReq){
 
@@ -72,14 +93,28 @@ public class FileService {
         file.setFolder(folder.get());
         file.setMember(member.get());
         file.setVolume(postFileReq.getMultipartFile().getSize());
+        file.setStatus(Boolean.TRUE);
+        file.setUploadDate(LocalDateTime.now());
         fileRepository.save(file);
-        //File foundFile=fileRepository.findById(file.getId());
-
-        //return new PostFileResponse(foundFile.getFilePath());
 
         return new PostFileResponse(fileRepository.findById(file.getId()).getFilePath());
 
 
     }
 
+    /**
+     *  파일 상태 변경
+     */
+    @Transactional
+    public PatchFileStatusResponse modifyFileStatus(Long fileId, Long memberId){
+
+        File file=fileRepository.findById(fileId);
+        // 파일 올린 사람과 파일 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
+        if(file.getMember().getId()==memberId) {
+            file.setStatus(Boolean.FALSE);
+            //file.setId(file.getId());
+        }
+
+        return new PatchFileStatusResponse(file);
+    }
 }

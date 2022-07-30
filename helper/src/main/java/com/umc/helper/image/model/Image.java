@@ -1,22 +1,24 @@
-package com.umc.helper.file.model;
+package com.umc.helper.image.model;
 
 import com.umc.helper.folder.Folder;
 import com.umc.helper.member.Member;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name="files")
-@RequiredArgsConstructor
 @Setter
-public class File {
+@NoArgsConstructor
+@Table(name="images")
+public class Image {
 
     @Id
     @GeneratedValue
-    @Column(name="file_id")
+    @Column(name="image_id")
     private Long id;
 
     private String originalFileName;
@@ -45,12 +47,11 @@ public class File {
     //==연관관계 편의 메서드==//
     public void setFolder(Folder folder){
         this.folder=folder;
-        folder.getFiles().add(this);
+        folder.getImages().add(this);
     }
 
     public void setMember(Member member){
         this.member=member;
     }
-
 
 }

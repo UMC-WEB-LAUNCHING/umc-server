@@ -25,7 +25,9 @@ public class LinkRepository {
     public List<Link> findAllByFolderId(Long folderId){
         return em.createQuery(
                 "select l from Link l"+
-                            " join fetch l.folder f",Link.class)
+                            " join fetch l.folder f"+
+                            " where l.status= :status",Link.class)
+                .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
 

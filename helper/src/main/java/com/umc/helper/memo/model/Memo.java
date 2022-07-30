@@ -1,39 +1,34 @@
-package com.umc.helper.file.model;
+package com.umc.helper.memo.model;
 
 import com.umc.helper.folder.Folder;
 import com.umc.helper.member.Member;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Table(name="files")
-@RequiredArgsConstructor
 @Setter
-public class File {
+@NoArgsConstructor
+@Table(name="memos")
+public class Memo {
 
-    @Id
-    @GeneratedValue
-    @Column(name="file_id")
+    @Id @GeneratedValue
+    @Column(name="memo_id")
     private Long id;
 
-    private String originalFileName;
+    private LocalDateTime uploadDate;
 
-    private String fileName;
+    private LocalDateTime lastModifiedDate;
 
-    private String filePath; // storeFileUrl: 저장된 파일의 URL
+    private String name;
 
-    private Long volume;
+    private String content;
 
     private Boolean status; // false - 쓰레기통에 들어감
-
-
-    private LocalDateTime uploadDate;
-//
-//    private LocalDateTime lastModifiedDate;
-
     @ManyToOne
     @JoinColumn(name="folder_id")
     private Folder folder;
@@ -45,12 +40,10 @@ public class File {
     //==연관관계 편의 메서드==//
     public void setFolder(Folder folder){
         this.folder=folder;
-        folder.getFiles().add(this);
+        folder.getMemos().add(this);
     }
 
     public void setMember(Member member){
         this.member=member;
     }
-
-
 }

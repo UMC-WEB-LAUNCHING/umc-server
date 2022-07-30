@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,23 +43,15 @@ public class LinkService {
         return result;
     }
 
-    /**
-     *  링크 업로드 v1 되는 코드
-     */
-//    @Transactional
-//    public PostLinkResponse uploadLink(Link link){
-//        linkRepository.save(link);
-//
-//        return new PostLinkResponse(linkRepository.findById(link.getId()).getId());
-//        //return new PostLinkResponse(linkRepositoryJpa.findById(link.getId()).get().getId());
-//    }
+
 
     /**
-     *  링크 업로드 v2 - controller에 너무 많은 로직 있는 거 같아서 service로 옮김
+     *  링크 업로드
      */
 
     @Transactional
     public PostLinkResponse uploadLink(PostLinkRequest postLinkReq){
+
         Optional<Folder> folder=folderRepository.findById(postLinkReq.getFolderId());
         Optional<Member> member=memberRepository.findById(postLinkReq.getMemberId());
 
@@ -67,7 +60,8 @@ public class LinkService {
         link.setUrl(postLinkReq.getUrl());
         link.setFolder(folder.get());
         link.setMember(member.get());
-
+        link.setStatus(Boolean.TRUE);
+        link.setUploadDate(LocalDateTime.now());
         linkRepository.save(link);
 
         return new PostLinkResponse(linkRepository.findById(link.getId()).getId());
@@ -79,9 +73,31 @@ public class LinkService {
     public PatchLinkResponse modifyLink(Long linkId, PatchLinkRequest patchLinkRequest){
 
         Link link=linkRepository.findById(linkId);
-        link.setName(patchLinkRequest.getName());
+
+        // 링크 올린 사람과 링크 수정하고자 하는 사람이 같아야만 수정
+        if(link.getMember().getId()==patchLinkRequest.getMemberId()){
+            link.setName(patchLinkRequest.getName());
+            link.setLastModifiedDate(LocalDateTime.now());
+        }
+
 
         return new PatchLinkResponse(link);
+    }
+
+    /**
+     *  링크 상태 변경
+     */
+    @Transactional
+    public PatchLinkStatusResponse modifyLinkStatus(Long linkId,Long memberId){
+
+        Link link=linkRepository.findById(linkId);
+        // 링크 올린 사람과 링크 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
+        if(link.getMember().getId()==memberId) {
+            link.setStatus(Boolean.FALSE);
+            //link.setId(link.getId());
+        }
+
+        return new PatchLinkStatusResponse(link);
     }
 
 }
