@@ -31,9 +31,9 @@ public class Image {
 
     private Boolean status; // false - 쓰레기통에 들어감
 
+    private LocalDateTime statusModifiedDate;
 
     private LocalDateTime uploadDate;
-//
 //    private LocalDateTime lastModifiedDate;
 
     @ManyToOne

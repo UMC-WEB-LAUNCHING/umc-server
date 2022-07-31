@@ -1,5 +1,6 @@
 package com.umc.helper.file;
 
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.file.model.PatchFileStatusResponse;
@@ -68,5 +69,20 @@ public class FileController {
         PatchFileStatusResponse modifiedFileStatus=fileService.modifyFileStatus(fileId,memberId);
 
         return new BaseResponse<>(modifiedFileStatus);
+    }
+
+    /**
+     * 파일 북마크 등록
+     * register file in bookmark
+     * @param fileId
+     * @param memberId
+     * @return addedBookmark
+     */
+    @PostMapping("folder/file/bookmark/{fileId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("fileId") Long fileId, @PathVariable("memberId") Long memberId){
+
+        PostBookmarkResponse addedBookmark=fileService.addBookmark(fileId,memberId);
+
+        return new BaseResponse<PostBookmarkResponse>(addedBookmark);
     }
 }

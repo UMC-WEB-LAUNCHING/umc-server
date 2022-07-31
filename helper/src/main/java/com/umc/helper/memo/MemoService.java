@@ -1,8 +1,10 @@
 package com.umc.helper.memo;
 
+import com.umc.helper.bookmark.model.Bookmark;
+import com.umc.helper.bookmark.BookmarkRepository;
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
-import com.umc.helper.link.model.*;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.memo.model.*;
@@ -27,18 +29,31 @@ public class MemoService {
     private final FolderRepository folderRepository;
     private final MemberRepository memberRepository;
 
+    private final BookmarkRepository bookmarkRepository;
+
     Logger log= LoggerFactory.getLogger(MemoService.class);
 
     /**
      *  해당 폴더 모든 메모 조회
      */
+//    @Transactional
+//    public List<GetMemosResponse> retrieveMemos(Long folderId){
+//
+//        List<Memo> memos= memoRepository.findAllByFolderId(folderId);
+//        List<GetMemosResponse> result=memos.stream()
+//                .map(m->new GetMemosResponse(m))
+//                .collect(toList());
+//
+//        return result;
+//    }
+
+    /**
+     *  해당 폴더 모든 메모 조회 - 모든 정보(즐겨찾기 여부 등)
+     */
     @Transactional
     public List<GetMemosResponse> retrieveMemos(Long folderId){
 
-        List<Memo> memos= memoRepository.findAllByFolderId(folderId);
-        List<GetMemosResponse> result=memos.stream()
-                .map(m->new GetMemosResponse(m))
-                .collect(toList());
+        List<GetMemosResponse> result= memoRepository.findAllInfoByFolderId(folderId);
 
         return result;
     }
@@ -92,9 +107,30 @@ public class MemoService {
         // 메모 올린 사람과 메모 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
         if(memo.getMember().getId()==memberId) {
             memo.setStatus(Boolean.FALSE);
-            //memo.setId(memo.getId());
+            memo.setStatusModifiedDate(LocalDateTime.now());
+
         }
 
         return new PatchMemoStatusResponse(memo);
+    }
+
+    /**
+     *  메모 북마크 등록
+     */
+    @Transactional
+    public PostBookmarkResponse addBookmark(Long memoId, Long memberId){
+
+        Member member=memberRepository.findById(memberId).get();
+        Memo memo=memoRepository.findById(memoId);
+
+        Bookmark bookmark=new Bookmark();
+        bookmark.setMemo(memo);
+        bookmark.setMember(member);
+        bookmark.setCategory("memo");
+        bookmark.setAddedDate(LocalDateTime.now());
+
+        bookmarkRepository.save(bookmark);
+
+        return new PostBookmarkResponse("memo",memoId,bookmarkRepository.findById(bookmark.getId()).getId());
     }
 }

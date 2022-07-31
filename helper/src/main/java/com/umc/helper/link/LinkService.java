@@ -1,10 +1,14 @@
 package com.umc.helper.link;
 
+import com.umc.helper.bookmark.BookmarkRepository;
+import com.umc.helper.bookmark.model.Bookmark;
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.link.model.*;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
+import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +31,23 @@ public class LinkService {
     private final LinkRepository linkRepository;
     private final FolderRepository folderRepository;
     private final MemberRepository memberRepository;
+    private final BookmarkRepository bookmarkRepository;
+
     Logger log= LoggerFactory.getLogger(LinkService.class);
+
+    /**
+     *  해당 폴더 모든 링크 조회
+     */
+//    @Transactional
+//    public List<GetLinksResponse> retrieveLinks(Long folderId){
+//
+//        List<Link> links= linkRepository.findAllByFolderId(folderId);
+//        List<GetLinksResponse> result=links.stream()
+//                .map(l->new GetLinksResponse(l))
+//                .collect(toList());
+//
+//        return result;
+//    }
 
     /**
      *  해당 폴더 모든 링크 조회
@@ -35,10 +55,7 @@ public class LinkService {
     @Transactional
     public List<GetLinksResponse> retrieveLinks(Long folderId){
 
-        List<Link> links= linkRepository.findAllByFolderId(folderId);
-        List<GetLinksResponse> result=links.stream()
-                .map(l->new GetLinksResponse(l))
-                .collect(toList());
+        List<GetLinksResponse> result= linkRepository.findAllInfoByFolderId(folderId);
 
         return result;
     }
@@ -94,10 +111,31 @@ public class LinkService {
         // 링크 올린 사람과 링크 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
         if(link.getMember().getId()==memberId) {
             link.setStatus(Boolean.FALSE);
-            //link.setId(link.getId());
+            link.setStatusModifiedDate(LocalDateTime.now());
+
         }
 
         return new PatchLinkStatusResponse(link);
+    }
+
+    /**
+     *  링크 북마크 등록
+     */
+    @Transactional
+    public PostBookmarkResponse addBookmark(Long linkId, Long memberId){
+
+        Member member=memberRepository.findById(memberId).get();
+        Link link=linkRepository.findById(linkId);
+
+        Bookmark bookmark=new Bookmark();
+        bookmark.setLink(link);
+        bookmark.setMember(member);
+        bookmark.setCategory("link");
+        bookmark.setAddedDate(LocalDateTime.now());
+
+        bookmarkRepository.save(bookmark);
+
+        return new PostBookmarkResponse("memo",linkId,bookmarkRepository.findById(bookmark.getId()).getId());
     }
 
 }

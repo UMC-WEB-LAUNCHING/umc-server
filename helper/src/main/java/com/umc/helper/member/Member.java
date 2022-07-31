@@ -1,8 +1,8 @@
 package com.umc.helper.member;
 
 
+import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.folder.Folder;
-import com.umc.helper.team.Team;
 import com.umc.helper.team.TeamMember;
 import lombok.*;
 
@@ -44,6 +44,7 @@ public class Member {
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL)
     private List<Folder> folders=new ArrayList<>();
 
-
+    @OneToMany(mappedBy="member",cascade = CascadeType.ALL)
+    private List<Bookmark> bookmarks =new ArrayList<>();
 
 }

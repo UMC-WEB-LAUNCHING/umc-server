@@ -4,6 +4,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.umc.helper.bookmark.BookmarkRepository;
+import com.umc.helper.bookmark.model.Bookmark;
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.file.FileRepository;
 import com.umc.helper.file.FileService;
 import com.umc.helper.file.model.*;
@@ -12,6 +15,7 @@ import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.image.model.*;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
+import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,8 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final FolderRepository folderRepository;
     private final MemberRepository memberRepository;
+    private final BookmarkRepository bookmarkRepository;
+
     private final AmazonS3Client amazonS3Client;
     Logger log= LoggerFactory.getLogger(ImageService.class);
 
@@ -45,16 +51,28 @@ public class ImageService {
     /**
      *  해당 폴더 모든 이미지 조회
      */
+//    @Transactional
+//    public List<GetImagesResponse> retrieveImages(Long folderId){
+//
+//        List<Image> images=imageRepository.findAllByFolderId(folderId);
+//        List<GetImagesResponse> result=images.stream()
+//                .map(i->new GetImagesResponse(i))
+//                .collect(toList());
+//
+//        return result;
+//    }
+
+    /**
+     *  해당 폴더 모든 이미지 조회
+     */
     @Transactional
     public List<GetImagesResponse> retrieveImages(Long folderId){
 
-        List<Image> images=imageRepository.findAllByFolderId(folderId);
-        List<GetImagesResponse> result=images.stream()
-                .map(i->new GetImagesResponse(i))
-                .collect(toList());
+        List<GetImagesResponse> result=imageRepository.findAllInfoByFolderId(folderId);
 
         return result;
     }
+
     /**
      *  이미지 업로드
      */
@@ -110,9 +128,30 @@ public class ImageService {
         // 파일 올린 사람과 파일 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
         if(image.getMember().getId()==memberId) {
             image.setStatus(Boolean.FALSE);
-            //file.setId(file.getId());
+            image.setStatusModifiedDate(LocalDateTime.now());
+
         }
 
         return new PatchImageStatusResponse(image);
+    }
+
+    /**
+     *  이미지 북마크 등록
+     */
+    @Transactional
+    public PostBookmarkResponse addBookmark(Long imageId, Long memberId){
+
+        Member member=memberRepository.findById(memberId).get();
+        Image image=imageRepository.findById(imageId);
+
+        Bookmark bookmark=new Bookmark();
+        bookmark.setImage(image);
+        bookmark.setMember(member);
+        bookmark.setCategory("image");
+        bookmark.setAddedDate(LocalDateTime.now());
+
+        bookmarkRepository.save(bookmark);
+
+        return new PostBookmarkResponse("image",imageId,bookmarkRepository.findById(bookmark.getId()).getId());
     }
 }

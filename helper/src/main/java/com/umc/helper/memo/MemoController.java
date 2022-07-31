@@ -1,5 +1,7 @@
 package com.umc.helper.memo;
 
+import com.umc.helper.bookmark.BookmarkService;
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.config.BaseResponse;
 
 import com.umc.helper.memo.model.*;
@@ -15,6 +17,8 @@ import java.util.List;
 public class MemoController {
 
     private final MemoService memoService;
+    private final BookmarkService bookmarkService;
+
     Logger log= LoggerFactory.getLogger(MemoController.class);
 
     /**
@@ -45,7 +49,7 @@ public class MemoController {
     }
 
     /**
-     * modify memo name(title)
+     * modify memo - title / content / title and content
      * @param memoId
      * @param patchMemoRequest
      * @return modifiedMemo
@@ -70,6 +74,21 @@ public class MemoController {
         PatchMemoStatusResponse modifiedMemoStatus=memoService.modifyMemoStatus(memoId,memberId);
 
         return new BaseResponse<>(modifiedMemoStatus);
+    }
+
+    /**
+     * 메모 북마크 등록
+     * register memo in bookmark
+     * @param memoId
+     * @param memberId
+     * @return addedBookmark
+     */
+    @PostMapping("folder/memo/bookmark/{memoId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("memoId") Long memoId, @PathVariable("memberId") Long memberId){
+
+        PostBookmarkResponse addedBookmark=memoService.addBookmark(memoId,memberId);
+
+        return new BaseResponse<>(addedBookmark);
     }
 
 

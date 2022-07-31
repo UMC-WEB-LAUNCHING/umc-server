@@ -1,5 +1,6 @@
 package com.umc.helper.image;
 
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.file.FileController;
 import com.umc.helper.file.FileService;
@@ -28,6 +29,7 @@ public class ImageController {
     private final ImageService imageService;
 
     /**
+     * 폴더 내 이미지 조회
      * retrieve images
      * @param folderId
      * @return getImagesRes
@@ -69,4 +71,20 @@ public class ImageController {
 
         return new BaseResponse<>(modifiedImageStatus);
     }
+
+    /**
+     * 이미지 북마크 등록
+     * register image in bookmark
+     * @param imageId
+     * @param memberId
+     * @return addedBookmark
+     */
+    @PostMapping("folder/image/bookmark/{imageId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("imageId") Long imageId, @PathVariable("memberId") Long memberId){
+
+        PostBookmarkResponse addedBookmark=imageService.addBookmark(imageId,memberId);
+
+        return new BaseResponse<PostBookmarkResponse>(addedBookmark);
+    }
+
 }

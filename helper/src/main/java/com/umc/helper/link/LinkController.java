@@ -1,5 +1,6 @@
 package com.umc.helper.link;
 
+import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
@@ -77,5 +78,20 @@ public class LinkController {
         PatchLinkStatusResponse modifiedLinkStatus=linkService.modifyLinkStatus(linkId,memberId);
 
         return new BaseResponse<>(modifiedLinkStatus);
+    }
+
+    /**
+     * 링크 북마크 등록
+     * register link in bookmark
+     * @param linkId
+     * @param memberId
+     * @return addedBookmark
+     */
+    @PostMapping("folder/link/bookmark/{linkId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("linkId") Long linkId, @PathVariable("memberId") Long memberId){
+
+        PostBookmarkResponse addedBookmark=linkService.addBookmark(linkId,memberId);
+
+        return new BaseResponse<PostBookmarkResponse>(addedBookmark);
     }
 }

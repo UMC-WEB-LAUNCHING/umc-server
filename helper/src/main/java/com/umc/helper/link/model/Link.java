@@ -29,6 +29,8 @@ public class Link {
     private String url;
 
     private Boolean status; // false - 쓰레기통에 들어감
+    private LocalDateTime statusModifiedDate;
+
     @ManyToOne
     @JoinColumn(name="folder_id")
     private Folder folder;

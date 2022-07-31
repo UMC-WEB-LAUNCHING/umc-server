@@ -8,5 +8,5 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PostMemoResponse {
-    private Long linkId;
+    private Long memoId;
 }

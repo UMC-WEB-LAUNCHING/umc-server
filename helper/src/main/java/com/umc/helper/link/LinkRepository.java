@@ -1,6 +1,8 @@
 package com.umc.helper.link;
 
+import com.umc.helper.link.model.GetLinksResponse;
 import com.umc.helper.link.model.Link;
+import com.umc.helper.memo.model.GetMemosResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +28,23 @@ public class LinkRepository {
         return em.createQuery(
                 "select l from Link l"+
                             " join fetch l.folder f"+
-                            " where l.status= :status",Link.class)
+                            " where l.status= :status"+
+                            " and f.id= :folderId",Link.class)
+                .setParameter("status",Boolean.TRUE)
+                .setParameter("folderId",folderId)
+                .getResultList();
+    }
+
+    public List<GetLinksResponse> findAllInfoByFolderId(Long folderId){
+        return em.createQuery(
+                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,bm.id,l.uploadDate,l.lastModifiedDate)"+
+                                " from Link l"+
+                                " join l.folder f"+
+                                " left join Bookmark bm"+
+                                " on l.id=bm.link.id"+
+                                " where f.id= :folderId"+
+                                " and l.status= :status",GetLinksResponse.class)
+                .setParameter("folderId",folderId)
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
