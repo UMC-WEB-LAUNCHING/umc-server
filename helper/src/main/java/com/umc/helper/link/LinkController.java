@@ -2,17 +2,13 @@ package com.umc.helper.link;
 
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.config.BaseResponse;
-import com.umc.helper.folder.Folder;
-import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.link.model.*;
-import com.umc.helper.member.Member;
-import com.umc.helper.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 import org.slf4j.Logger;
 
 
@@ -31,7 +27,7 @@ public class LinkController {
      * @return getLinksRes
      */
     //link/{folderId}
-    @GetMapping("folder/{folderId}/links") // url이 뭔가 이상함 TODO: url 수정 필요 이름으로 받아서 id로 찾기
+    @GetMapping("folder/{folderId}/links") // url이 뭔가 이상함
     public BaseResponse<List<GetLinksResponse>> getLinks(@PathVariable("folderId") Long folderId){
 
         List<GetLinksResponse> getLinksRes=linkService.retrieveLinks(folderId);
@@ -57,6 +53,7 @@ public class LinkController {
      * @param linkId
      * @param patchLinkRequest
      * @return modifiedLink
+     * TODO: 링크 url도 변경 가능? 현재는 링크 제목만 변경 가능
      */
     @PatchMapping("folder/link/{linkId}")
     public BaseResponse<PatchLinkResponse> modifyLink(@PathVariable("linkId") Long linkId, @RequestBody PatchLinkRequest patchLinkRequest){
@@ -72,7 +69,7 @@ public class LinkController {
      * @param memberId
      * @return modifiedLinkStatus
      */
-    @PatchMapping("folder/link/trash/{linkId}/{memberId}") // TODO: url 수정 필요
+    @PatchMapping("folder/link/trash/{linkId}/{memberId}")
     public BaseResponse<PatchLinkStatusResponse> modifyLinkStatus(@PathVariable("linkId") Long linkId,@PathVariable("memberId") Long memberId){
 
         PatchLinkStatusResponse modifiedLinkStatus=linkService.modifyLinkStatus(linkId,memberId);
@@ -92,6 +89,6 @@ public class LinkController {
 
         PostBookmarkResponse addedBookmark=linkService.addBookmark(linkId,memberId);
 
-        return new BaseResponse<PostBookmarkResponse>(addedBookmark);
+        return new BaseResponse<>(addedBookmark);
     }
 }

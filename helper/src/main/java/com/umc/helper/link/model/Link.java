@@ -1,8 +1,7 @@
 package com.umc.helper.link.model;
 
-import com.umc.helper.folder.Folder;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.Member;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

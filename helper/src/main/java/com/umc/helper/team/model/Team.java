@@ -1,8 +1,7 @@
-package com.umc.helper.team;
+package com.umc.helper.team.model;
 
-import com.umc.helper.folder.Folder;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.Member;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +31,11 @@ public class Team {
     @OneToMany(mappedBy = "team",cascade = CascadeType.ALL)
     private List<Folder> folders=new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name="member_id")
+    private Member creator;
+
+    private Boolean status;
     //==연관관계 편의 메서드==//
 
 

@@ -3,12 +3,11 @@ package com.umc.helper.link;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
-import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.link.model.*;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
-import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 
 @Service
@@ -69,19 +66,19 @@ public class LinkService {
     @Transactional
     public PostLinkResponse uploadLink(PostLinkRequest postLinkReq){
 
-        Optional<Folder> folder=folderRepository.findById(postLinkReq.getFolderId());
+        Folder folder=folderRepository.findById(postLinkReq.getFolderId());
         Optional<Member> member=memberRepository.findById(postLinkReq.getMemberId());
 
         Link link=new Link();
         link.setName(postLinkReq.getName());
         link.setUrl(postLinkReq.getUrl());
-        link.setFolder(folder.get());
+        link.setFolder(folder);
         link.setMember(member.get());
         link.setStatus(Boolean.TRUE);
         link.setUploadDate(LocalDateTime.now());
         linkRepository.save(link);
 
-        return new PostLinkResponse(linkRepository.findById(link.getId()).getId());
+        return new PostLinkResponse(linkRepository.findById(link.getId()).getId(), link.getUrl(), link.getName());
     }
     /**
      *  링크 변경 - 제목
@@ -135,7 +132,7 @@ public class LinkService {
 
         bookmarkRepository.save(bookmark);
 
-        return new PostBookmarkResponse("memo",linkId,bookmarkRepository.findById(bookmark.getId()).getId());
+        return new PostBookmarkResponse("link",linkId,bookmarkRepository.findById(bookmark.getId()).getId());
     }
 
 }

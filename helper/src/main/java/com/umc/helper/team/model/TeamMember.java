@@ -1,7 +1,7 @@
-package com.umc.helper.team;
+package com.umc.helper.team.model;
 
 import com.umc.helper.member.Member;
-import lombok.AccessLevel;
+import com.umc.helper.team.model.Team;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +25,8 @@ public class TeamMember {
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="team_id")
     private Team team;
+
+    private Boolean status;
 
     //==연관관계 편의 메서드==//
     public void setMember(Member member){

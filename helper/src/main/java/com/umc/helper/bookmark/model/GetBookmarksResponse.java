@@ -17,6 +17,8 @@ public class GetBookmarksResponse {
     private Long fileId;
     private Long imageId;
     private Long linkId;
+
+    private Long folderId;
     private Long memberId; // 북마크한 사람 id
     private LocalDateTime addedDate;
 
@@ -31,6 +33,8 @@ public class GetBookmarksResponse {
         else linkId= null;
         if(bookmark.getMemo()!=null) memoId=bookmark.getMemo().getId();
         else memoId= null;
+        if(bookmark.getFolder()!=null) folderId=bookmark.getFolder().getId();
+        else folderId= null;
         memberId=bookmark.getMember().getId();
         addedDate=bookmark.getAddedDate();
     }

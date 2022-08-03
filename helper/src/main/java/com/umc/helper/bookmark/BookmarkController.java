@@ -20,7 +20,12 @@ public class BookmarkController {
 
     private final BookmarkService bookMarkService;
 
-    // 북마크 삭제
+    /**
+     * TODO: 시간 순 정렬 필요
+     * retreive bookmarks
+     * @param bookmarkId
+     * @return result
+     */
     @DeleteMapping("/bookmark/{bookmarkId}")
     public BaseResponse<String> deleteBookmark(@PathVariable("bookmarkId") Long bookmarkId){
         String result=bookMarkService.deleteBookmark(bookmarkId);
@@ -28,7 +33,11 @@ public class BookmarkController {
         return new BaseResponse<>(result);
     }
 
-    // 북마크 조회
+    /**
+     * delete bookmark
+     * @param memberId
+     * @return getBookmarksRes
+     */
     @GetMapping("/bookmark/{memberId}")
     public BaseResponse<List<GetBookmarksResponse>> getBookmarks(@PathVariable("memberId") Long memberId){
         List<GetBookmarksResponse> getBookmarksRes=bookMarkService.retrieveBookmarks(memberId);

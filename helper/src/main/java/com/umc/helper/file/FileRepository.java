@@ -3,6 +3,7 @@ package com.umc.helper.file;
 import com.umc.helper.file.model.File;
 import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.memo.model.GetMemosResponse;
+import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class FileRepository {
 
     public List<GetFilesResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,bm.id,f.uploadDate)"+
+                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,ff.id,bm.id,f.uploadDate)"+
                                 " from File f"+
                                 " join f.folder ff"+
                                 " left join Bookmark bm"+
@@ -45,5 +46,29 @@ public class FileRepository {
                 .setParameter("folderId",folderId)
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
+    }
+
+    public List<File> findTrashByMemberId(Long memberId){
+        return em.createQuery(
+                        "select f from File f"+
+                                " where f.status= :status"+
+                                " and f.member.id= :memberId",File.class)
+                .setParameter("status",Boolean.FALSE)
+                .setParameter("memberId",memberId)
+                .getResultList();
+    }
+
+    public void remove(File file){
+        em.remove(file);
+    }
+
+    public int removeTrashByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from File f"+
+                                " where f.member.id= :memberId"+
+                                " and f.status= :status")
+                .setParameter("memberId",memberId)
+                .setParameter("status",Boolean.FALSE)
+                .executeUpdate();
     }
 }

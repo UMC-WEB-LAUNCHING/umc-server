@@ -14,7 +14,7 @@ public class GetFilesResponse {
     private String originalFileName;
     private String member_name; // uploader
     private String folder_name;
-
+    private Long folderId;
     private Long bookmarkId;
 
     private LocalDateTime uploadDate;
@@ -29,12 +29,13 @@ public class GetFilesResponse {
         folder_name=file.getFolder().getFolderName();
     }
 
-    public GetFilesResponse(Long fileId,String filePath, String originalFileName, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate){
+    public GetFilesResponse(Long fileId,String filePath, String originalFileName, String member_name, String folderName, Long folderId,Long bookmarkId,LocalDateTime uploadDate){
         this.fileId=fileId;
         this.filePath=filePath;
         this.originalFileName=originalFileName;
         this.member_name=member_name;
         this.folder_name=folderName;
+        this.folderId=folderId;
         this.bookmarkId=bookmarkId;
         this.uploadDate=uploadDate;
         //this.lastModifiedDate=lastModifiedDate;

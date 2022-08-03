@@ -2,8 +2,8 @@ package com.umc.helper.member;
 
 
 import com.umc.helper.bookmark.model.Bookmark;
-import com.umc.helper.folder.Folder;
-import com.umc.helper.team.TeamMember;
+import com.umc.helper.folder.model.Folder;
+import com.umc.helper.team.model.TeamMember;
 import lombok.*;
 
 import javax.persistence.*;

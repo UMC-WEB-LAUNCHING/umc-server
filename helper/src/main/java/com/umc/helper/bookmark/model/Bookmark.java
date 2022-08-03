@@ -1,7 +1,7 @@
 package com.umc.helper.bookmark.model;
 
 import com.umc.helper.file.model.File;
-import com.umc.helper.folder.Folder;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.member.Member;
@@ -52,5 +52,13 @@ public class Bookmark {
     private String category; // link, memo, file, image
 
     private LocalDateTime addedDate;
+
+    //==연관관계 편의 메서드==//
+    public void setMember(Member member){
+        this.member=member;
+        member.getBookmarks().add(this);
+    }
+
+
 
 }

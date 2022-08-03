@@ -7,15 +7,11 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
-import com.umc.helper.file.FileRepository;
-import com.umc.helper.file.FileService;
-import com.umc.helper.file.model.*;
-import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.image.model.*;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
-import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly = true)
@@ -79,7 +73,7 @@ public class ImageService {
     @Transactional
     public PostImageResponse uploadImage(PostImageRequest postImageReq){
 
-        Optional<Folder> folder=folderRepository.findById(postImageReq.getFolderId());
+        Folder folder=folderRepository.findById(postImageReq.getFolderId());
         Optional<Member> member=memberRepository.findById(postImageReq.getMemberId());
 
         ObjectMetadata objectMetadata=new ObjectMetadata();
@@ -106,7 +100,7 @@ public class ImageService {
         image.setFileName(storeFileName);
         image.setOriginalFileName(originalFileName);
         image.setFilePath(storeFileUrl);
-        image.setFolder(folder.get());
+        image.setFolder(folder);
         image.setMember(member.get());
         image.setVolume(postImageReq.getMultipartFile().getSize());
         image.setStatus(Boolean.TRUE);

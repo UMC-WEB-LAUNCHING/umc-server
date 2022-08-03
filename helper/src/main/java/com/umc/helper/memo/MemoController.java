@@ -17,7 +17,6 @@ import java.util.List;
 public class MemoController {
 
     private final MemoService memoService;
-    private final BookmarkService bookmarkService;
 
     Logger log= LoggerFactory.getLogger(MemoController.class);
 
@@ -72,6 +71,7 @@ public class MemoController {
     public BaseResponse<PatchMemoStatusResponse> modifyMemoStatus(@PathVariable("memoId") Long memoId, @PathVariable("memberId") Long memberId){
 
         PatchMemoStatusResponse modifiedMemoStatus=memoService.modifyMemoStatus(memoId,memberId);
+        // TODO: 북마크에서 삭제 필요
 
         return new BaseResponse<>(modifiedMemoStatus);
     }

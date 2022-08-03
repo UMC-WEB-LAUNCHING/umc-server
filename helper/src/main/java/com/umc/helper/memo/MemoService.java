@@ -3,8 +3,8 @@ package com.umc.helper.memo;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
-import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.memo.model.*;
@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly = true)
@@ -63,13 +61,13 @@ public class MemoService {
      */
     @Transactional
     public PostMemoResponse uploadMemo(PostMemoRequest postMemoReq){
-        Optional<Folder> folder=folderRepository.findById(postMemoReq.getFolderId());
+        Folder folder=folderRepository.findById(postMemoReq.getFolderId());
         Optional<Member> member=memberRepository.findById(postMemoReq.getMemberId());
 
         Memo memo=new Memo();
         memo.setName(postMemoReq.getName());
         memo.setContent(postMemoReq.getContent());
-        memo.setFolder(folder.get());
+        memo.setFolder(folder);
         memo.setMember(member.get());
         memo.setStatus(Boolean.TRUE);
         memo.setUploadDate(LocalDateTime.now());

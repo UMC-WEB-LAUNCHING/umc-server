@@ -1,8 +1,11 @@
 package com.umc.helper.link;
 
+import com.umc.helper.bookmark.model.Bookmark;
+import com.umc.helper.file.model.File;
 import com.umc.helper.link.model.GetLinksResponse;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.memo.model.GetMemosResponse;
+import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -49,4 +52,27 @@ public class LinkRepository {
                 .getResultList();
     }
 
+    public List<Link> findTrashByMemberId(Long memberId){
+        return em.createQuery(
+                        "select l from Link l"+
+                                " where l.status= :status"+
+                                " and l.member.id= :memberId",Link.class)
+                .setParameter("status",Boolean.FALSE)
+                .setParameter("memberId",memberId)
+                .getResultList();
+    }
+
+    public void remove(Link link){
+        em.remove(link);
+    }
+
+    public int removeTrashByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from Link l"+
+                                " where l.member.id= :memberId"+
+                                " and l.status= :status")
+                .setParameter("memberId",memberId)
+                .setParameter("status",Boolean.FALSE)
+                .executeUpdate();
+    }
 }

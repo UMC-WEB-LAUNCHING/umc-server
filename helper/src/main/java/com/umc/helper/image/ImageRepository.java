@@ -1,8 +1,10 @@
 package com.umc.helper.image;
 
+import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.file.model.File;
 import com.umc.helper.image.model.GetImagesResponse;
 import com.umc.helper.image.model.Image;
+import com.umc.helper.link.model.Link;
 import com.umc.helper.memo.model.GetMemosResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -45,5 +47,27 @@ public class ImageRepository {
                 .getResultList();
     }
 
+    public List<Image> findTrashByMemberId(Long memberId){
+        return em.createQuery(
+                        "select i from Image i"+
+                                " where i.status= :status"+
+                                " and i.member.id= :memberId",Image.class)
+                .setParameter("status",Boolean.FALSE)
+                .setParameter("memberId",memberId)
+                .getResultList();
+    }
 
+    public void remove(Image image){
+        em.remove(image);
+    }
+
+    public int removeTrashByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from Image i"+
+                                " where i.member.id= :memberId"+
+                                " and i.status= :status")
+                .setParameter("memberId",memberId)
+                .setParameter("status",Boolean.FALSE)
+                .executeUpdate();
+    }
 }

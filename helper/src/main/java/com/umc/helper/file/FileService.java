@@ -8,13 +8,10 @@ import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.file.model.*;
-import com.umc.helper.folder.Folder;
 import com.umc.helper.folder.FolderRepository;
-import com.umc.helper.link.model.Link;
-import com.umc.helper.link.model.PatchLinkStatusResponse;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
-import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
@@ -22,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +26,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly=true)
@@ -81,7 +75,7 @@ public class FileService {
     @Transactional
     public PostFileResponse uploadFile(PostFileRequest postFileReq){
 
-        Optional<Folder> folder=folderRepository.findById(postFileReq.getFolderId());
+        Folder folder=folderRepository.findById(postFileReq.getFolderId());
         Optional<Member> member=memberRepository.findById(postFileReq.getMemberId());
 
         ObjectMetadata objectMetadata=new ObjectMetadata();
@@ -108,7 +102,7 @@ public class FileService {
         file.setFileName(storeFileName);
         file.setOriginalFileName(originalFileName);
         file.setFilePath(storeFileUrl);
-        file.setFolder(folder.get());
+        file.setFolder(folder);
         file.setMember(member.get());
         file.setVolume(postFileReq.getMultipartFile().getSize());
         file.setStatus(Boolean.TRUE);

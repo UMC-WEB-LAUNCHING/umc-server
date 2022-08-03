@@ -1,6 +1,6 @@
 package com.umc.helper.file.model;
 
-import com.umc.helper.folder.Folder;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.Member;
 import lombok.*;
 

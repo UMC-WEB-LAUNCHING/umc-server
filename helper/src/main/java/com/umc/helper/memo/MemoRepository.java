@@ -1,5 +1,6 @@
 package com.umc.helper.memo;
 
+import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.link.model.GetLinksResponse;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.memo.model.GetMemosResponse;
@@ -47,5 +48,29 @@ public class MemoRepository {
                 .setParameter("folderId",folderId)
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
+    }
+
+    public List<Memo> findTrashByMemberId(Long memberId){
+        return em.createQuery(
+                "select m from Memo m"+
+                        " where m.status= :status"+
+                        " and m.member.id= :memberId",Memo.class)
+                .setParameter("status",Boolean.FALSE)
+                .setParameter("memberId",memberId)
+                .getResultList();
+    }
+
+    public void remove(Memo memo){
+        em.remove(memo);
+    }
+
+    public int removeTrashByMemberId(Long memberId){
+        return em.createQuery(
+                "delete from Memo m"+
+                        " where m.member.id= :memberId"+
+                        " and m.status= :status")
+                .setParameter("memberId",memberId)
+                .setParameter("status",Boolean.FALSE)
+                 .executeUpdate();
     }
 }

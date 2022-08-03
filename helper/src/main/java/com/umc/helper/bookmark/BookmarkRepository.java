@@ -30,7 +30,61 @@ public class BookmarkRepository {
                 .setParameter("id",memberId)
                 .getResultList();
     }
+    public List<Bookmark> findBookmarkByMemberIdWithCategoryItemId(Long memberId,Long itemId,String category){
+        return em.createQuery(
+                "select bm from Bookmark bm"+
+                        " where bm.member.id= :memberId"+
+                        " and bm.category= :category",Bookmark.class)
+                .setParameter("memberId",memberId)
+                .setParameter("category",category)
+                .getResultList();
+    }
+    public int removeBookmarkMemo(Long memoId,Long memberId){
+        return em.createQuery(
+                "delete from Bookmark bm"+
+                        " where bm.memo.id= :memoId")
+                .setParameter("memoId",memoId)
+                .executeUpdate();
+    }
 
+    public int removeBookmarkLink(Long linkId,Long memberId){
+        return em.createQuery(
+                        "delete from Bookmark bm"+
+                                " where bm.link.id= :linkId")
+                .setParameter("linkId",linkId)
+                .executeUpdate();
+//        return em.createQuery(
+//                        "delete from Bookmark bm"+
+//                                " where bm.member.id= :memberId"+
+//                                " and bm.link.id= :linkId")
+//                .setParameter("memberId",memberId)
+//                .setParameter("linkId",linkId)
+//                .executeUpdate();
+    }
+
+    public int removeBookmarkFile(Long fileId,Long memberId){
+        return em.createQuery(
+                        "delete from Bookmark bm"+
+                                " where bm.file.id= :fileId")
+                .setParameter("fileId",fileId)
+                .executeUpdate();
+    }
+
+    public void removeBookmarkImage(Long imageId,Long memberId){
+         em.createQuery(
+                        "delete from Bookmark bm"+
+                                " where bm.image.id= :imageId")
+                .setParameter("imageId",imageId)
+                .executeUpdate();
+    }
+
+    public void removeBookmarkFolder(Long folderId,Long memberId){
+        em.createQuery(
+                        "delete from Bookmark bm"+
+                                " where bm.folder.id= :folderId")
+                .setParameter("folderId",folderId)
+                .executeUpdate();
+    }
     public void remove(Bookmark bookmark){
         em.remove(bookmark);
     }
