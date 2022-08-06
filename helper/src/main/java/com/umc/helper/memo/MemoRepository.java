@@ -1,6 +1,7 @@
 package com.umc.helper.memo;
 
 import com.umc.helper.bookmark.model.Bookmark;
+import com.umc.helper.file.model.File;
 import com.umc.helper.link.model.GetLinksResponse;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.memo.model.GetMemosResponse;
@@ -72,5 +73,15 @@ public class MemoRepository {
                 .setParameter("memberId",memberId)
                 .setParameter("status",Boolean.FALSE)
                  .executeUpdate();
+    }
+
+    public List<Memo> findByWord(String word){
+        return em.createQuery(
+                        "select m from Memo m"+
+                                " where m.name like :word"+
+                                " and m.status=:status",Memo.class)
+                .setParameter("word",word)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
     }
 }

@@ -1,6 +1,7 @@
 package com.umc.helper.trash.model;
 
 import com.umc.helper.file.model.File;
+import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.memo.model.Memo;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Data
-public class GetTrashResponse {
+public class GetTrashResponse implements Comparable<GetTrashResponse>{
 
     private String category;
     private Long memoId;
@@ -59,4 +60,13 @@ public class GetTrashResponse {
         this.modifiedStatusDate=link.getStatusModifiedDate();
     }
 
+    public int compareTo(GetTrashResponse getTrashResponse){
+        if(getTrashResponse.getModifiedStatusDate().compareTo(this.getModifiedStatusDate())==1){
+            return 1;
+        }
+        else if(getTrashResponse.getModifiedStatusDate().compareTo(this.getModifiedStatusDate())==-1){
+            return -1;
+        }
+        return 0;
+    }
 }

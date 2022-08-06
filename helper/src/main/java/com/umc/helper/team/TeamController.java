@@ -60,4 +60,17 @@ public class TeamController {
 
         return new BaseResponse<>(deleteTeamRes);
     }
+
+    /**
+     * exit member from team
+     * @param teamId
+     * @param memberId
+     * @return
+     */
+    @DeleteMapping("team/exit/{teamId}/{memberId}")
+    public BaseResponse<DeleteTeamMemberResponse> deleteMemberFromTeam(@PathVariable("teamId") Long teamId, @PathVariable("memberId") Long memberId){
+        DeleteTeamMemberResponse deleteTeamMemberRes=teamService.deleteMemberFromTeam(teamId,memberId);
+
+        return new BaseResponse<>(deleteTeamMemberRes);
+    }
 }

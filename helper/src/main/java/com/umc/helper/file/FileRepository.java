@@ -36,7 +36,7 @@ public class FileRepository {
 
     public List<GetFilesResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,ff.id,bm.id,f.uploadDate)"+
+                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,ff.id,bm.id,f.uploadDate,f.lastModifiedDate,f.volume)"+
                                 " from File f"+
                                 " join f.folder ff"+
                                 " left join Bookmark bm"+
@@ -70,5 +70,18 @@ public class FileRepository {
                 .setParameter("memberId",memberId)
                 .setParameter("status",Boolean.FALSE)
                 .executeUpdate();
+    }
+
+    public List<File> findByWord(String word,List<Long> folderIds){
+        word="%"+word+"%";
+        return em.createQuery(
+                "select f from File f"+
+                        " where f.originalFileName like :word"+
+                        " and f.status=:status"+
+                        " and f.folder.id in (:folderIds)",File.class)
+                .setParameter("word",word)
+                .setParameter("status",Boolean.TRUE)
+                .setParameter("folderIds",folderIds)
+                .getResultList();
     }
 }

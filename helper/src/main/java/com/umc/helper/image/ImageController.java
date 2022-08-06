@@ -8,10 +8,7 @@ import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.file.model.PatchFileStatusResponse;
 import com.umc.helper.file.model.PostFileRequest;
 import com.umc.helper.file.model.PostFileResponse;
-import com.umc.helper.image.model.GetImagesResponse;
-import com.umc.helper.image.model.PatchImageStatusResponse;
-import com.umc.helper.image.model.PostImageRequest;
-import com.umc.helper.image.model.PostImageResponse;
+import com.umc.helper.image.model.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +69,18 @@ public class ImageController {
         return new BaseResponse<>(modifiedImageStatus);
     }
 
+    /**
+     * modify image name
+     * @param imageId
+     * @param patchImageReq
+     * @return
+     */
+    @PatchMapping("folder/image/{imageId}")
+    public BaseResponse<PatchImageResponse> modifyImage(@PathVariable("imageId") Long imageId, @RequestBody PatchImageRequest patchImageReq){
+        PatchImageResponse modifiedImage=imageService.modifyImage(imageId,patchImageReq);
+
+        return new BaseResponse<>(modifiedImage);
+    }
     /**
      * 이미지 북마크 등록
      * register image in bookmark

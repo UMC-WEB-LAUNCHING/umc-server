@@ -76,6 +76,7 @@ public class LinkService {
         link.setMember(member.get());
         link.setStatus(Boolean.TRUE);
         link.setUploadDate(LocalDateTime.now());
+        folder.setLastModifiedDate(LocalDateTime.now());
         linkRepository.save(link);
 
         return new PostLinkResponse(linkRepository.findById(link.getId()).getId(), link.getUrl(), link.getName());
@@ -87,11 +88,13 @@ public class LinkService {
     public PatchLinkResponse modifyLink(Long linkId, PatchLinkRequest patchLinkRequest){
 
         Link link=linkRepository.findById(linkId);
+        Folder folder=folderRepository.findById(link.getFolder().getId());
 
         // 링크 올린 사람과 링크 수정하고자 하는 사람이 같아야만 수정
         if(link.getMember().getId()==patchLinkRequest.getMemberId()){
             link.setName(patchLinkRequest.getName());
             link.setLastModifiedDate(LocalDateTime.now());
+            folder.setLastModifiedDate(LocalDateTime.now());
         }
 
 

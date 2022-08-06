@@ -75,4 +75,14 @@ public class LinkRepository {
                 .setParameter("status",Boolean.FALSE)
                 .executeUpdate();
     }
+
+    public List<Link> findByWord(String word){
+        return em.createQuery(
+                        "select l from Link l"+
+                                " where l.name like :word"+
+                                " and l.status=:status",Link.class)
+                .setParameter("word",word)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
+    }
 }

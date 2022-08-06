@@ -10,6 +10,9 @@ import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.file.model.*;
 import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.image.model.Image;
+import com.umc.helper.image.model.PatchImageRequest;
+import com.umc.helper.image.model.PatchImageResponse;
 import com.umc.helper.member.Member;
 import com.umc.helper.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +110,8 @@ public class FileService {
         file.setVolume(postFileReq.getMultipartFile().getSize());
         file.setStatus(Boolean.TRUE);
         file.setUploadDate(LocalDateTime.now());
+        file.setLastModifiedDate(LocalDateTime.now());
+        folder.setLastModifiedDate(LocalDateTime.now());
         fileRepository.save(file);
 
         return new PostFileResponse(fileRepository.findById(file.getId()).getFilePath());
@@ -147,5 +152,30 @@ public class FileService {
         bookmarkRepository.save(bookmark);
 
         return new PostBookmarkResponse("file",fileId,bookmarkRepository.findById(bookmark.getId()).getId());
+    }
+
+    /**
+     * s3 버킷에서 파일 삭제
+     */
+    public void deleteFromS3(String storeFileName){
+        String key="files/"+storeFileName;
+        amazonS3Client.deleteObject(bucket,key);
+    }
+
+    /**
+     *  파일 이름 변경
+     */
+    @Transactional
+    public PatchFileResponse modifyFile(Long fileId, PatchFileRequest patchFileReq){
+        File file=fileRepository.findById(fileId);
+        Folder folder=folderRepository.findById(file.getFolder().getId());
+
+        if(file.getMember().getId()==patchFileReq.getMemberId()){
+            file.setOriginalFileName(patchFileReq.getName());
+            file.setLastModifiedDate(LocalDateTime.now());
+            folder.setLastModifiedDate(file.getLastModifiedDate());
+        }
+
+        return new PatchFileResponse(file);
     }
 }

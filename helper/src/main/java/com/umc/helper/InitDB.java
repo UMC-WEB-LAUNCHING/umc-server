@@ -13,6 +13,7 @@
 //import javax.annotation.PostConstruct;
 //import javax.persistence.EntityManager;
 //import javax.transaction.Transactional;
+//import java.time.LocalDateTime;
 //
 //
 //@Component
@@ -50,36 +51,37 @@
 //            Member member4=createMember("444@gmail.com","ddd","dddpw",MemberType.일반회원);
 //            em.persist(member4);
 //
-////            Team team1=createTeam("teamA",member1); // member - aaa,bbb,ccc
-////            em.persist(team1);
-////
-////            Team team2=createTeam("teamB",member3); // member - ccc,ddd
-////            em.persist(team2);
-////
-////            TeamMember teamMember1=createTeamMember(team1,member1);
-////            em.persist(teamMember1);
-////
-////            TeamMember teamMember2=createTeamMember(team1,member2);
-////            em.persist(teamMember2);
-////
-////            TeamMember teamMember3=createTeamMember(team1,member3);
-////            em.persist(teamMember3);
-////
-////            TeamMember teamMember4=createTeamMember(team2,member3);
-////            em.persist(teamMember4);
-////
-////            TeamMember teamMember5=createTeamMember(team2,member4);
-////            em.persist(teamMember5);
+//            Team team1=createTeam("teamA",member1); // member - aaa,bbb,ccc
+//            em.persist(team1);
+//
+//            Team team2=createTeam("teamB",member3); // member - ccc,ddd
+//            em.persist(team2);
+//
+//
+//            TeamMember teamMember1=createTeamMember(team1,member1);
+//            em.persist(teamMember1);
+//
+//            TeamMember teamMember2=createTeamMember(team1,member2);
+//            em.persist(teamMember2);
+//
+//            TeamMember teamMember3=createTeamMember(team1,member3);
+//            em.persist(teamMember3);
+//
+//            TeamMember teamMember4=createTeamMember(team2,member3);
+//            em.persist(teamMember4);
+//
+//            TeamMember teamMember5=createTeamMember(team2,member4);
+//            em.persist(teamMember5);
 //
 //            // set private folders and public(team) folders
-////            Folder folder1=createPrivateFolder("aaa private folder1",member1); // aaa private folder1
-////            em.persist(folder1);
-////
-////            Folder folder2=createPublicFolder("teamA public folder",team1); // teamA(aaa,bbb,ccc) public folder
-////            em.persist(folder2);
-////
-////            Folder folder3=createPrivateFolder("aaa private folder2",member1); // aaa private folder2;
-////            em.persist(folder3);
+//            Folder folder1=createPrivateFolder("aaa private folder1",member1); // aaa private folder1
+//            em.persist(folder1);
+//
+//            Folder folder2=createPublicFolder("teamA public folder",team1); // teamA(aaa,bbb,ccc) public folder
+//            em.persist(folder2);
+//
+//            Folder folder3=createPrivateFolder("aaa private folder2",member1); // aaa private folder2;
+//            em.persist(folder3);
 //
 //
 //        }
@@ -88,7 +90,8 @@
 //            Folder folder=new Folder();
 //            folder.setFolderName(name);
 //            folder.setMember(member);
-//
+//            folder.setStatus(Boolean.TRUE);
+//            folder.setCreatedDate(LocalDateTime.now());
 //            return folder;
 //        }
 //
@@ -96,7 +99,8 @@
 //            Folder folder=new Folder();
 //            folder.setFolderName(name);
 //            folder.setTeam(team);
-//
+//            folder.setStatus(Boolean.TRUE);
+//            folder.setCreatedDate(LocalDateTime.now());
 //            return folder;
 //        }
 //
@@ -114,6 +118,7 @@
 //            Team team=new Team();
 //            team.setName(name);
 //            team.setCreator(creator);
+//            team.setCreatedDate(LocalDateTime.now());
 //            return team;
 //        }
 //

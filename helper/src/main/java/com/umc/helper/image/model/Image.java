@@ -25,7 +25,7 @@ public class Image {
 
     private String fileName;
 
-    private String filePath; // storeFileUrl: 저장된 파일의 URL
+    private String filePath; // storeFileUrl: 저장된 이미지의 URL
 
     private Long volume;
 
@@ -34,7 +34,7 @@ public class Image {
     private LocalDateTime statusModifiedDate;
 
     private LocalDateTime uploadDate;
-//    private LocalDateTime lastModifiedDate;
+    private LocalDateTime lastModifiedDate;
 
     @ManyToOne
     @JoinColumn(name="folder_id")

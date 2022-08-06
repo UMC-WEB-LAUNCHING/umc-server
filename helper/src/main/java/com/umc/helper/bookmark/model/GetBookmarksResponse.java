@@ -1,5 +1,6 @@
 package com.umc.helper.bookmark.model;
 
+import com.umc.helper.file.model.GetFilesResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Data
-public class GetBookmarksResponse {
+public class GetBookmarksResponse implements Comparable<GetBookmarksResponse>{
 
     private Long bookmarkId;
     private String category;
@@ -37,5 +38,16 @@ public class GetBookmarksResponse {
         else folderId= null;
         memberId=bookmark.getMember().getId();
         addedDate=bookmark.getAddedDate();
+    }
+
+    @Override
+    public int compareTo(GetBookmarksResponse getBookmarksResponse){
+        if(getBookmarksResponse.getAddedDate().compareTo(this.getAddedDate())==1){
+            return 1;
+        }
+        else if(getBookmarksResponse.getAddedDate().compareTo(this.getAddedDate())==-1){
+            return -1;
+        }
+        return 0;
     }
 }

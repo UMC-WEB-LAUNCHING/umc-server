@@ -2,10 +2,9 @@ package com.umc.helper.file;
 
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.config.BaseResponse;
-import com.umc.helper.file.model.GetFilesResponse;
-import com.umc.helper.file.model.PatchFileStatusResponse;
-import com.umc.helper.file.model.PostFileRequest;
-import com.umc.helper.file.model.PostFileResponse;
+import com.umc.helper.file.model.*;
+import com.umc.helper.image.model.PatchImageRequest;
+import com.umc.helper.image.model.PatchImageResponse;
 import com.umc.helper.link.model.PatchLinkStatusResponse;
 import com.umc.helper.link.model.PostLinkRequest;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +71,18 @@ public class FileController {
     }
 
     /**
+     * modify file name
+     * @param fileId
+     * @param patchFileReq
+     * @return
+     */
+    @PatchMapping("folder/file/{fileId}")
+    public BaseResponse<PatchFileResponse> modifyFile(@PathVariable("fileId") Long fileId, @RequestBody PatchFileRequest patchFileReq){
+        PatchFileResponse modifiedFile=fileService.modifyFile(fileId,patchFileReq);
+
+        return new BaseResponse<>(modifiedFile);
+    }
+    /**
      * 파일 북마크 등록
      * register file in bookmark
      * @param fileId
@@ -83,6 +94,6 @@ public class FileController {
 
         PostBookmarkResponse addedBookmark=fileService.addBookmark(fileId,memberId);
 
-        return new BaseResponse<PostBookmarkResponse>(addedBookmark);
+        return new BaseResponse<>(addedBookmark);
     }
 }

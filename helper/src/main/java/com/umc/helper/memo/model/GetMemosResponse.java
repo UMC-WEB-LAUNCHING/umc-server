@@ -28,6 +28,7 @@ public class GetMemosResponse {
         name=memo.getName();
         member_name=memo.getMember().getUsername();
         folder_name=memo.getFolder().getFolderName();
+        lastModifiedDate=memo.getLastModifiedDate();
     }
 
     public GetMemosResponse(Long memoId,String name, String content, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate){

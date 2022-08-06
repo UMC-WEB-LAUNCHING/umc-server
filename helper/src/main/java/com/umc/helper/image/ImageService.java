@@ -105,6 +105,7 @@ public class ImageService {
         image.setVolume(postImageReq.getMultipartFile().getSize());
         image.setStatus(Boolean.TRUE);
         image.setUploadDate(LocalDateTime.now());
+        folder.setLastModifiedDate(LocalDateTime.now());
         imageRepository.save(image);
 
         return new PostImageResponse(imageRepository.findById(image.getId()).getFilePath());
@@ -147,5 +148,30 @@ public class ImageService {
         bookmarkRepository.save(bookmark);
 
         return new PostBookmarkResponse("image",imageId,bookmarkRepository.findById(bookmark.getId()).getId());
+    }
+
+    /**
+     * s3 버킷에서 이미지 삭제
+     */
+    public void deleteFromS3(String storeFileName){
+        String key="images/"+storeFileName;
+        amazonS3Client.deleteObject(bucket,key);
+    }
+
+    /**
+     *  이미지 이름 변경
+     */
+    @Transactional
+    public PatchImageResponse modifyImage(Long imageId,PatchImageRequest patchImageReq){
+        Image image=imageRepository.findById(imageId);
+        Folder folder=folderRepository.findById(image.getFolder().getId());
+
+        if(image.getMember().getId()==patchImageReq.getMemberId()){
+            image.setOriginalFileName(patchImageReq.getName());
+            image.setLastModifiedDate(LocalDateTime.now());
+            folder.setLastModifiedDate(image.getLastModifiedDate());
+        }
+
+        return new PatchImageResponse(image);
     }
 }

@@ -22,7 +22,6 @@ public class TeamMemberRepository {
     }
 
 
-
     public List<TeamMember> findTeamMembersByTeamId(Long teamId){
         return em.createQuery(
                         "select tm from TeamMember tm"+
@@ -44,4 +43,15 @@ public class TeamMemberRepository {
                 .setParameter("teamId",teamId)
                 .executeUpdate();
     }
+
+    public int removeTeamMemberByMemberTeamId(Long memberId,Long teamId){
+        return em.createQuery(
+                        "delete from TeamMember tm"+
+                                " where tm.team.teamIdx= :teamId"+
+                                " and tm.member.id= :memberId")
+                .setParameter("teamId",teamId)
+                .setParameter("memberId",memberId)
+                .executeUpdate();
+    }
+
 }

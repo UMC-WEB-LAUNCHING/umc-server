@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -16,7 +17,10 @@ import static java.util.stream.Collectors.toList;
 public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
-    // 북마크 삭제
+
+    /**
+     *  북마크 삭제
+     */
     @Transactional
     public String deleteBookmark(Long bookmarkId){
         Bookmark bookmark=bookmarkRepository.findById(bookmarkId);
@@ -25,6 +29,9 @@ public class BookmarkService {
         return "북마크 삭제 성공";
     }
 
+    /**
+     * 북마크 조회
+     */
     @Transactional
     public List<GetBookmarksResponse> retrieveBookmarks(Long memberId){
 
@@ -32,6 +39,7 @@ public class BookmarkService {
         List<GetBookmarksResponse> result=bookmarks.stream()
                 .map(bm->new GetBookmarksResponse(bm))
                 .collect(toList());
+        Collections.sort(result);
 
         return result;
     }

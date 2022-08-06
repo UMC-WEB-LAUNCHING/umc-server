@@ -46,6 +46,7 @@ public class FolderService {
             folder.setTeam(teamRepository.findById(postFolderReq.getId()));
             folder.setCreatorId(postFolderReq.getCreatorId());
             folder.setStatus(Boolean.TRUE);
+            folder.setLastModifiedDate(LocalDateTime.now());
             postFolderRes.setFolder_case("team");
         }
         else if(folder_case.equals("member")){
@@ -53,6 +54,7 @@ public class FolderService {
             folder.setMember(memberRepository.findById(postFolderReq.getId()).get());
             folder.setCreatorId(memberRepository.findById(postFolderReq.getId()).get().getId());
             folder.setStatus(Boolean.TRUE);
+            folder.setLastModifiedDate(LocalDateTime.now());
             postFolderRes.setFolder_case("member");
         }
         folderRepository.save(folder);

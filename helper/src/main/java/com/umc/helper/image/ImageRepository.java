@@ -35,7 +35,7 @@ public class ImageRepository {
 
     public List<GetImagesResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.image.model.GetImagesResponse(i.id,i.filePath,i.originalFileName,i.member.username,f.folderName,bm.id,i.uploadDate)"+
+                        "select new com.umc.helper.image.model.GetImagesResponse(i.id,i.filePath,i.originalFileName,i.member.username,f.folderName,bm.id,i.volume,i.uploadDate,i.lastModifiedDate)"+
                                 " from Image i"+
                                 " join i.folder f"+
                                 " left join Bookmark bm"+
@@ -69,5 +69,15 @@ public class ImageRepository {
                 .setParameter("memberId",memberId)
                 .setParameter("status",Boolean.FALSE)
                 .executeUpdate();
+    }
+
+    public List<Image> findByWord(String word){
+        return em.createQuery(
+                        "select i from Image i"+
+                                " where i.fileName like :word"+
+                                " and i.status=:status",Image.class)
+                .setParameter("word",word)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
     }
 }

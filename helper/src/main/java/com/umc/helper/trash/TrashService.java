@@ -2,10 +2,12 @@ package com.umc.helper.trash;
 
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.file.FileRepository;
+import com.umc.helper.file.FileService;
 import com.umc.helper.file.model.File;
 import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.image.ImageRepository;
+import com.umc.helper.image.ImageService;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.LinkRepository;
 import com.umc.helper.link.model.Link;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -34,6 +37,9 @@ public class TrashService {
     private final BookmarkRepository bookmarkRepository;
 
     private final FolderRepository folderRepository;
+
+    private final FileService fileService;
+    private final ImageService imageService;
 
     /**
      * 휴지통 조회
@@ -60,6 +66,7 @@ public class TrashService {
         for(Link l:getLinkTrash){
             result.add(new GetTrashResponse(l));
         }
+        Collections.sort(result);
 
         return result;
     }
@@ -81,6 +88,8 @@ public class TrashService {
                 category="file";
                 id=file.getId();
                 memberId=file.getMember().getId();
+                bookmarkRepository.removeBookmarkFile(file.getId(),memberId);
+                fileService.deleteFromS3(file.getFileName());
                 fileRepository.remove(file);
             }
             else if(item.getCategory().equals("image")){
@@ -88,6 +97,8 @@ public class TrashService {
                 category="image";
                 id=image.getId();
                 memberId=image.getMember().getId();
+                bookmarkRepository.removeBookmarkImage(image.getId(),memberId);
+                imageService.deleteFromS3(image.getFileName());
                 imageRepository.remove(image);
             }
             else if(item.getCategory().equals("memo")){
@@ -95,6 +106,7 @@ public class TrashService {
                 category="memo";
                 id=memo.getId();
                 memberId=memo.getMember().getId();
+                bookmarkRepository.removeBookmarkMemo(memo.getId(),memberId);
                 memoRepository.remove(memo);
             }
             else if(item.getCategory().equals("link")){
@@ -102,13 +114,16 @@ public class TrashService {
                 category="link";
                 id=link.getId();
                 memberId=link.getMember().getId();
+                bookmarkRepository.removeBookmarkLink(link.getId(),memberId);
                 linkRepository.remove(link);
             }
+            // TODO: 폴더 내 데이터 삭제
             else if(item.getCategory().equals("folder")){
                 Folder folder=folderRepository.findById(item.getId());
                 category="folder";
                 id=folder.getId();
                 memberId=folder.getCreatorId();
+                bookmarkRepository.removeBookmarkFolder(folder.getId(),memberId);
                 folderRepository.remove(folder);
             }
             result.add(new DeleteItemsResponse(category,id,memberId));
@@ -140,23 +155,25 @@ public class TrashService {
         }
         int linkDeletedCount=linkRepository.removeTrashByMemberId(memberId);
 
-        // 북마크된 이미지 삭제 후 이미지 영구 삭제  TODO: s3 삭제 로직 필요
+        // 북마크된 이미지 삭제 후 이미지 영구 삭제
         List<Image> deletedImage=imageRepository.findTrashByMemberId(memberId);
         for(Image i:deletedImage){
             Long imageId=i.getId();
             bookmarkRepository.removeBookmarkImage(imageId,memberId);
+            imageService.deleteFromS3(i.getFileName());
         }
         int imageDeletedCount=imageRepository.removeTrashByMemberId(memberId);
 
-        // 북마크된 파일 삭제 후 파일 영구 삭제 TODO: s3 삭제 로직 필요
+        // 북마크된 파일 삭제 후 파일 영구 삭제
         List<File> deletedFile=fileRepository.findTrashByMemberId(memberId);
         for(File f:deletedFile){
             Long fileId=f.getId();
             bookmarkRepository.removeBookmarkFile(fileId,memberId);
+            fileService.deleteFromS3(f.getFileName());
         }
         int fileDeletedCount=fileRepository.removeTrashByMemberId(memberId);
 
-        // 북마크된 폴더 삭제 후 폴더 영구 삭제
+        // 북마크된 폴더 삭제 후 폴더 영구 삭제 TODO: 폴더 내 데이터 삭제
         List<Folder> deletedFolder=folderRepository.findTrashByMemberId(memberId);
         for(Folder f:deletedFolder){
             Long folderId=f.getId();

@@ -117,14 +117,25 @@ public class TeamService {
     @Transactional
     public DeleteTeamResponse deleteTeam(Long teamId,Long creatorId){
 
-        List<TeamMember> teamMembers=teamMemberRepository.findTeamMembersByTeamId(teamId);
-        for(TeamMember teamMember:teamMembers){
-            teamMemberRepository.removeTeamMemberByTeamId(teamId);
-        }
+//        List<TeamMember> teamMembers=teamMemberRepository.findTeamMembersByTeamId(teamId);
+        teamMemberRepository.removeTeamMemberByTeamId(teamId);
+//        for(TeamMember teamMember:teamMembers){
+//            teamMemberRepository.removeTeamMemberByTeamId(teamMember.getTeam().getTeamIdx());
+//        }
 
-        Team team=teamRepository.findById(teamId);
+//        Team team=teamRepository.findById(teamId);
         teamRepository.removeTeamByTeamId(teamId);
 
         return new DeleteTeamResponse(teamId);
+    }
+
+    /**
+     *  팀에서 팀원 퇴장 TODO: 팀에서 모든 팀원 나가면 팀 제거되게
+     */
+    @Transactional
+    public DeleteTeamMemberResponse deleteMemberFromTeam(Long teamId,Long memberId){
+        teamMemberRepository.removeTeamMemberByMemberTeamId(memberId,teamId);
+
+        return new DeleteTeamMemberResponse(memberId,teamId);
     }
 }

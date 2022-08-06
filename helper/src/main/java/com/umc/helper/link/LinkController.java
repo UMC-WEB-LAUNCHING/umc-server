@@ -53,7 +53,6 @@ public class LinkController {
      * @param linkId
      * @param patchLinkRequest
      * @return modifiedLink
-     * TODO: 링크 url도 변경 가능? 현재는 링크 제목만 변경 가능
      */
     @PatchMapping("folder/link/{linkId}")
     public BaseResponse<PatchLinkResponse> modifyLink(@PathVariable("linkId") Long linkId, @RequestBody PatchLinkRequest patchLinkRequest){

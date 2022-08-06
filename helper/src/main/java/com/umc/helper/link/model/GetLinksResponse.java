@@ -25,6 +25,7 @@ public class GetLinksResponse {
         name=link.getName();
         member_name=link.getMember().getUsername();
         folder_name=link.getFolder().getFolderName();
+        lastModifiedDate=link.getLastModifiedDate();
     }
 
     public GetLinksResponse(Long linkId,String url, String name, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate){

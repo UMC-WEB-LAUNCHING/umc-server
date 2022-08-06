@@ -1,5 +1,6 @@
 package com.umc.helper.folder;
 
+import com.umc.helper.file.model.File;
 import com.umc.helper.folder.model.Folder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -61,4 +62,6 @@ public class FolderRepository {
                 .executeUpdate();
 
     }
+
+
 }

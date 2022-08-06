@@ -71,6 +71,7 @@ public class MemoService {
         memo.setMember(member.get());
         memo.setStatus(Boolean.TRUE);
         memo.setUploadDate(LocalDateTime.now());
+        folder.setLastModifiedDate(LocalDateTime.now());
         memoRepository.save(memo);
 
         return new PostMemoResponse(memoRepository.findById(memo.getId()).getId());
@@ -83,12 +84,14 @@ public class MemoService {
     public PatchMemoResponse modifyMemo(Long memoId, PatchMemoRequest patchMemoRequest){
 
         Memo memo=memoRepository.findById(memoId);
+        Folder folder=folderRepository.findById(memo.getFolder().getId());
 
         // 메모 올린 사람과 메모 수정하고자 하는 사람이 같아야만 수정
         if(memo.getMember().getId()==patchMemoRequest.getMemberId()){
             memo.setName(patchMemoRequest.getName());
             memo.setContent(patchMemoRequest.getContent());
             memo.setLastModifiedDate(LocalDateTime.now());
+            folder.setLastModifiedDate(LocalDateTime.now()); // TODO: memo lastModifiedDAte하고 folder lastModifiedDate하고 맞춰야함
         }
 
 
