@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoginPage</title>
+    <link rel="stylesheet" href="./LoginStyle.css">
+    <script src="https://kit.fontawesome.com/9953406f4b.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="loginPage">
+        <div class="leftBlue">
+            중간에 로고 넣기(flex, justify, align)
+        </div>
+
+        <div class="rightWhite">
+            <div id="createAccount">
+                <a href="">Create an account</a>
+            </div>
+            <div id="rightContents">
+                <div id="wrap">
+
+                    <div id="loginTitle">
+                        <div id="welcome">
+                            <h2>Welcome to (과제헬퍼)!</h2>
+                        </div>
+                        <p>Register your account</p>
+                    </div>
+
+                    <div id="login">
+                        <form action="">
+                            <div id="email">
+                                <input type="text" name="email" placeholder="이메일 (로그인 시 필요)" id="emailInput">
+                                <i id="envelopeIcon" class="fa fa-envelope fa-lg"></i>
+                            </div>
+                            <div id="password">
+                                <input type="text" name="password" placeholder="비밀번호" id="passwordInput">
+                                <i id="lockIcon" class="fa fa-lock fa-lg"></i>
+                                <i id="eyeIcon" class="fa fa-eye fa-lg"></i>
+                            </div>
+                            <div id="buttonLogin">
+                                <input type="submit" value="로그인" id="loginBtn">
+                            </div>
+                        </form>
+
+                        <div class="loginTrouble">
+                            <span id="forget1">Forgot your</span>
+                            <a href="https://www.naver.com/" id="forget2">Username</a>
+                            <span id="forget3">and</span>
+                            <a href="https://www.naver.com/" id="forget4">Password?</a>
+                        </div>
+                    </div>
+
+                    <div id="OR">
+                        <span class="before"></span>
+                        <p>OR</p>
+                        <span class="after"></span>
+                    </div>
+                    
+                    <p id="Easier">Easier sign in</p>
+
+                    <div id="socialLogin">
+                        <a href="www.naver.com">
+                            <span class="logoBnt">
+                                <img src="./button_네이버.png" width='65px' height='65px' alt="네이버">
+                            </span>
+                        </a>
+                        <a href="www.naver.com">
+                            <span class="logoBnt">
+                                <img src="./button_구글.png" width='65px' height='65px' alt="구글">
+                            </span>
+                        </a>
+                
+                        <a href="www.naver.com">
+                            <span class="logoBnt">
+                                <img src="./button_페이스북.png" width='65px' height='65px' alt="페이스북">
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

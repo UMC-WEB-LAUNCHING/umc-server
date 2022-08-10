@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RegisterPage</title>
+    <link rel="stylesheet" href="./RegisterStyle.css">
+    <script src="https://kit.fontawesome.com/9953406f4b.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="registerPage">
+        <div class="leftBlue">
+            중간에 로고 넣기(flex, justify, align)
+        </div>
+
+    <div class="rightWhite">
+        <div id="rightContents">
+            <div id="wrap">
+
+                <!-- Welcome -->
+                <div id="registerTitle">
+                    <div id="welcome">
+                        <h2>Welcome to (과제헬퍼)!</h2>
+                    </div>
+                    <p>Register your account</p>
+                </div>
+
+                <!-- Register -->
+                <div id="register">
+
+                    <form>
+                        <div id="name">
+                            <input type="text" name="name" placeholder="이름" id="nameInput">
+                            <i id="userIcon" class="fa fa-user fa-lg"></i>
+                        </div>
+
+                        <div id="email">
+                            <input type="text" name="email" placeholder="이메일 (로그인 시 필요)" id="emailInput">
+                            <i id="envelopeIcon" class="fa fa-envelope fa-lg"></i>
+                        </div>
+            
+                        <div id="password">
+                            <input type="text" name="password" placeholder="비밀번호" id="passwordInput">
+                            <i id="lockIcon" class="fa fa-lock fa-lg"></i>
+                            <i id="eyeSlashIcon" class="fa fa-eye-slash fa-lg"></i>
+                        </div>
+
+                        <div class="pwCondition">
+                            <span>영문, 숫자, 특수문자 2개 조합 10자 이상</span>
+                        </div>
+
+                        <div id="agreement">
+                            <div class='btn' id="btn1">
+                                <input type="checkbox" id="check1">
+                                <span class="checkSentence">(필수) 서비스 이용약관, 개인정보 처리방침에 동의</span>
+                            </div>
+                            <div class='btn' id="btn2">
+                                <input type="checkbox" id="check2">
+                                <span class="checkSentence">(선택) 홍보 및 이벤트/ 마케팅 이용동의</span>
+                            </div>
+                        </div>
+
+                        <div id="signIn">
+                            <input type="submit" value="가입하기" id="signInBtn">
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+</body>
+</html>

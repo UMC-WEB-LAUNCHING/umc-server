@@ -1,0 +1,264 @@
+/* height 위치를 주면, 잘 안됨 : 이유는 모름*/
+@import url(https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css);
+
+* {
+    font-family: 'NanumSquare', sans-serif;
+    margin : 0;
+    padding : 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+}
+
+#loginPage {
+    width : 100%;
+    /* height : 100%; */
+    display: flex;
+    flex-direction: row;
+    /* border:1px solid; */
+}
+
+.leftBlue {
+    background-color: #267dff;
+    width : 40%;
+    /* height : 100%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.rightWhite {
+    background-color: #ffffff;
+    width : 60%;
+    /* height : 100%; */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 650px;
+}
+
+#createAccount {
+    display: flex;
+    width : 100%;
+    flex-direction : row-reverse;
+    /* margin-top, margin-right */
+    padding : 0 3vw;
+    margin-top : 4.5vh;
+    position : absolute;
+    /* border:1px solid; */
+
+    /* color: #267dff; */
+    text-decoration: underline;
+}
+
+#rightContents {
+    width : 100%
+}
+
+#wrap {
+    /* max-width: ; */
+    margin : 0 15%;
+    /* margin-top을 어떻게 줄까2 */
+    margin-top : 16vh;
+    width : auto;
+    /* height: 100%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    /* min-width : 500px; */
+    /* border:1px solid; */
+}
+
+#loginTitle {
+    width: 100%;
+    /* margin-top : 90px; */
+    /* margin-top을 어떻게 줄까2 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#welcome {
+    display: flex;
+    align-items : center;
+    justify-content: flex-start;
+}
+
+/* font-size : 상대크기? */
+
+#welcome h2 {
+    color : #000;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 42px;
+}
+
+#loginTitle p {
+    color : #bdbdbd;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 30px;
+}
+
+/* min-width를 줘야함 */
+#login {
+    margin-top : 10vh; 
+    /* 100px이었음 */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#login form {
+    width : 100%;
+}
+
+#email, #password {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex: row;
+    align-items: center;
+    margin-top : 3vh;
+}
+
+#emailInput, #passwordInput {
+    width: 100%;
+    /* color : #b0b0b0; */
+    font-size: 20px;
+    font-weight: 500;
+    border: 2.5px solid #E0E0E0;
+    border-radius: 5px;
+    padding: 20px 60px;
+    /* margin-top : 3vh; */
+    /* margin-top: 28px; */
+}
+
+#emailInput::placeholder, #passwordInput::placeholder {
+    color: #BDBDBD;
+}
+
+#envelopeIcon, #lockIcon {
+    color: #A1A1A1;
+    position: absolute;
+    left: 23px;
+    /* top: 50px; */
+}
+
+#eyeIcon {
+    color: #A1A1A1;
+    position: absolute;
+    right: 23px;
+    /* top: 53px; */
+}
+
+.loginError {
+    color : #eb5757;
+    font-size: 16px;
+    font-weight: 700;
+    visibility: hidden;
+}
+
+.loginAlert {
+    display: hidden;
+}
+#buttonLogin {
+    width : 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loginBtn {
+    width: 100%;
+    height: 65px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #267dff;
+    border: none;
+    border-radius: 31.5px;
+    box-shadow: 0px 5px 8px 0 rgba(0,0,0,0.25);
+    cursor: pointer;
+
+    padding: 17px auto;
+    margin-top: 4vh; 
+    /* margin-top: 40px;  */
+    margin-bottom: 2.5vh;
+}
+
+#forget1, #forget2, #forget3, #forget4 {
+    font-size: 20px;
+    font-weight: 700;
+} 
+
+#forget1, #forget3 {
+    color: #BDBDBD;
+}
+
+#forget2, #forget4 {
+    color: #267dff;
+}
+
+#OR {
+    margin-top : 7vh;
+    display: flex;
+    flex-direction: row;
+    flex-wrap : nowrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+
+#OR p {
+    padding : 0 36px;
+    font-size: 20px;
+    line-height: 30px;
+    color : #e0e0e0;
+    margin : 0px;
+}
+
+#OR .before, #OR .after {
+    display: block;
+    width : 248px;
+    height : 1px;
+    background-color: #e0e0e0;
+}
+
+
+#Easier {
+    margin-top : 7vh;
+    color: #BDBDBD;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+#socialLogin {
+    margin-top: 3.5vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8.5vh;
+    max-height: 100%;
+}
+
+.logoBnt {
+    /* box-sizing: content-box; */
+    width : 65px;
+    height : 65px;
+    /* border : 1px solid #bdbdbd; */
+    /* border-radius: 50%; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin : 0 25px;
+}

@@ -8,15 +8,17 @@ import com.umc.helper.member.MemberRepository;
 import com.umc.helper.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@Controller
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 public class MainController {
@@ -29,26 +31,20 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/member/login")
+    @GetMapping("/login")
     public String loginPage() {
-        return "member/loginForm";
+        return "login";
     }
 
-    @GetMapping("/member/signup")
+    @GetMapping("/register")
     public String signupForm(Model model) {
         model.addAttribute("signUpForm", new SignUpForm());
         return "member/signUpForm";
     }
 
-
     @InitBinder("signUpForm")
     protected void initBinder(WebDataBinder binder) {
         binder.addValidators(new SignUpFormValidator(memberRepository));
-    }
-
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String goLogin() {
-        return "login";
     }
 
     @PostMapping("/signup")

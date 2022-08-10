@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/helper.iml" filepath="$PROJECT_DIR$/.idea/modules/helper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/helper.main.iml" filepath="$PROJECT_DIR$/.idea/modules/helper.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/helper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/helper.test.iml" />
     </modules>
   </component>
