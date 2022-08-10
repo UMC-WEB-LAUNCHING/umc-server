@@ -1,6 +1,6 @@
 //package com.umc.helper.authentication;
 //
-//import com.umc.helper.member.Member;
+//import com.umc.helper.member.model.Member;
 //import com.umc.helper.member.MemberRepository;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;

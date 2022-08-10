@@ -3,7 +3,7 @@
 //
 ////import com.umc.helper.authentication.SignUpForm;
 ////import com.umc.helper.authentication.SignUpFormValidator;
-//import com.umc.helper.member.Member;
+//import com.umc.helper.member.model.Member;
 //import com.umc.helper.member.MemberRepository;
 ////import com.umc.helper.member.MemberService;
 //import lombok.RequiredArgsConstructor;

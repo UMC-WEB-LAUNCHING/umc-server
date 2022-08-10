@@ -5,7 +5,7 @@ import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
-import com.umc.helper.member.Member;
+import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.memo.model.*;
 import lombok.RequiredArgsConstructor;

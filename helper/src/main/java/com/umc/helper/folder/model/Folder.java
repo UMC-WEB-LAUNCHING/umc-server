@@ -3,7 +3,7 @@ package com.umc.helper.folder.model;
 import com.umc.helper.file.model.File;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.model.Link;
-import com.umc.helper.member.Member;
+import com.umc.helper.member.model.Member;
 import com.umc.helper.memo.model.Memo;
 import com.umc.helper.team.model.Team;
 import lombok.*;

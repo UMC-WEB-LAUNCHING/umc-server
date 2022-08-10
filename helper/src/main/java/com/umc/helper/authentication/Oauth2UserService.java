@@ -1,6 +1,6 @@
 //package com.umc.helper.authentication;
 //
-//import com.umc.helper.member.Member;
+//import com.umc.helper.member.model.Member;
 //import com.umc.helper.member.MemberRepository;
 //import com.umc.helper.member.MemberType;
 //import com.umc.helper.provider.GoogleUserInfo;
@@ -8,7 +8,6 @@
 //import com.umc.helper.provider.OAuth2UserInfo;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
-//import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 //import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

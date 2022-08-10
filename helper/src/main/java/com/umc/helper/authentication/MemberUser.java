@@ -1,7 +1,8 @@
 //package com.umc.helper.authentication;
 //
 //
-//import com.umc.helper.member.Member;
+////import com.amazonaws.services.connect.model.User;
+//import com.umc.helper.member.model.Member;
 //import lombok.Getter;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.User;

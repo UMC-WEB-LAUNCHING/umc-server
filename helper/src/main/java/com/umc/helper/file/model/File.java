@@ -1,7 +1,7 @@
 package com.umc.helper.file.model;
 
 import com.umc.helper.folder.model.Folder;
-import com.umc.helper.member.Member;
+import com.umc.helper.member.model.Member;
 import lombok.*;
 
 import javax.persistence.*;

@@ -5,7 +5,7 @@ import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.folder.FolderService;
 import com.umc.helper.folder.model.GetFoldersResponse;
 import com.umc.helper.mainpage.model.GetMainPageResponse;
-import com.umc.helper.member.Member;
+import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.team.TeamService;
 import com.umc.helper.team.model.GetTeamsResponse;

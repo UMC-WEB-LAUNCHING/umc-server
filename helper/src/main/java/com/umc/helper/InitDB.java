@@ -1,7 +1,7 @@
 //package com.umc.helper;
 //
 //import com.umc.helper.folder.model.Folder;
-//import com.umc.helper.member.Member;
+//import com.umc.helper.member.model.Member;
 //import com.umc.helper.member.MemberType;
 //import com.umc.helper.team.model.Team;
 //import com.umc.helper.team.model.TeamMember;

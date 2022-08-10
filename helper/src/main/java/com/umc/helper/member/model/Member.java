@@ -1,8 +1,9 @@
-package com.umc.helper.member;
+package com.umc.helper.member.model;
 
 
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.member.MemberType;
 import com.umc.helper.team.model.TeamMember;
 import lombok.*;
 

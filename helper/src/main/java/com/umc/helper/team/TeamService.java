@@ -1,6 +1,6 @@
 package com.umc.helper.team;
 
-import com.umc.helper.member.Member;
+import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.team.model.*;
 import lombok.RequiredArgsConstructor;
