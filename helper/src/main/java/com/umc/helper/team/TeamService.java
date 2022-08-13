@@ -1,17 +1,35 @@
 package com.umc.helper.team;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.umc.helper.file.FileRepository;
+import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.model.Folder;
+import com.umc.helper.image.ImageRepository;
+import com.umc.helper.link.LinkRepository;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
+import com.umc.helper.member.model.PatchMemberInfoResponse;
+import com.umc.helper.member.model.PatchMemberNameRequest;
+import com.umc.helper.memo.MemoRepository;
+import com.umc.helper.team.exception.InvalidDeleteTeam;
 import com.umc.helper.team.model.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -22,8 +40,18 @@ public class TeamService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final FolderRepository folderRepository;
+    private final FileRepository fileRepository;
+    private final ImageRepository imageRepository;
+    private final MemoRepository memoRepository;
+    private final LinkRepository linkRepository;
 
     private Logger logger= LoggerFactory.getLogger(TeamService.class);
+
+    private final AmazonS3Client amazonS3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     /**
      * 팀 생성
@@ -115,16 +143,28 @@ public class TeamService {
      * 팀 삭제 TODO: 팀이 가지고 있던 폴더, 데이터 다 삭제
      */
     @Transactional
-    public DeleteTeamResponse deleteTeam(Long teamId,Long creatorId){
+    public DeleteTeamResponse deleteTeam(Long teamId,Long deletingId){
 
-//        List<TeamMember> teamMembers=teamMemberRepository.findTeamMembersByTeamId(teamId);
+        Team team=teamRepository.findById(teamId);
+        team.notExistTeam(); // 팀 존재 확인
+
+        if(team.getCreator().getId()!=deletingId){ // 팀 생성자와 팀 삭제 시도 유저 idx 비교
+            throw new InvalidDeleteTeam();
+        }
+
         teamMemberRepository.removeTeamMemberByTeamId(teamId);
-//        for(TeamMember teamMember:teamMembers){
-//            teamMemberRepository.removeTeamMemberByTeamId(teamMember.getTeam().getTeamIdx());
-//        }
-
-//        Team team=teamRepository.findById(teamId);
         teamRepository.removeTeamByTeamId(teamId);
+
+        List<Folder> folders=folderRepository.findEveryByTeamId(teamId); // 팀 폴더 조회
+        for(Folder folder :folders) {                    // 폴더 내 모든 데이터 삭제
+            fileRepository.removeEveryByFolderId(folder.getId());
+            imageRepository.removeEveryByFolderId(folder.getId());
+            memoRepository.removeEveryByFolderId(folder.getId());
+            linkRepository.removeEveryByFolderId(folder.getId());
+        }
+
+        folderRepository.removeFolderByTeamId(teamId); // 팀 폴더 모두 삭제
+
 
         return new DeleteTeamResponse(teamId);
     }
@@ -134,8 +174,67 @@ public class TeamService {
      */
     @Transactional
     public DeleteTeamMemberResponse deleteMemberFromTeam(Long teamId,Long memberId){
+        Team team=teamRepository.findById(teamId);
+        team.notExistTeam(); // 팀 존재 확인
+
+        Member member=memberRepository.findById(memberId).get();
+        member.notExistMember(); // 멤버 존재 확인
+
         teamMemberRepository.removeTeamMemberByMemberTeamId(memberId,teamId);
 
+        //팀에서 모든 팀원 나가면 팀 제거
+        if(teamMemberRepository.findTeamMembersByTeamId(teamId).size()==0){
+            teamRepository.removeTeamByTeamId(teamId);
+        }
+
         return new DeleteTeamMemberResponse(memberId,teamId);
+    }
+
+    // 팀 프로필 사진 변경
+    @Transactional
+    public PatchTeamInfoResponse editProfile(Long teamId, MultipartFile profile){
+        Team team=teamRepository.findById(teamId);
+
+        // TODO: 팀 프로필 사진이 존재하면 s3에서 기존의 프로필 사진 삭제
+//        if(team.getProfileImage()!=null){
+//            String key="profiles/"+team.getProfileImage();
+//            String storeFileUrl = amazonS3Client.getUrl(bucket, key).toString();
+//            amazonS3Client.deleteObject(bucket,storeFileUrl);
+//        }
+
+        ObjectMetadata objectMetadata=new ObjectMetadata();
+        objectMetadata.setContentType(profile.getContentType());
+        objectMetadata.setContentLength(profile.getSize());
+
+        String originalFileName= profile.getOriginalFilename();
+        int index=originalFileName.lastIndexOf(".");
+        String ext= originalFileName.substring(index+1); // 확장자
+
+        String storeFileName= UUID.randomUUID()+"."+ext; // 저장되는 이름
+        String key="profiles/"+storeFileName;
+
+        try (InputStream inputStream = profile.getInputStream()) {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String storeFileUrl = amazonS3Client.getUrl(bucket, key).toString();
+
+        team.setProfileImage(storeFileUrl);
+
+        return new PatchTeamInfoResponse(team.getTeamIdx(),team.getName(),team.getProfileImage());
+    }
+
+    //  팀 이름 수정
+    @Transactional
+    public PatchTeamInfoResponse editName(Long teamId, PatchTeamNameRequest patchTeamNameReq){
+        Team team=teamRepository.findById(teamId);
+
+        team.setName(patchTeamNameReq.getName());
+
+        return new PatchTeamInfoResponse(team.getTeamIdx(),team.getName(),team.getProfileImage());
+
     }
 }

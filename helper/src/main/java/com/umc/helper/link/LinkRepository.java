@@ -85,4 +85,11 @@ public class LinkRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
+    public int removeEveryByFolderId(Long folderId){
+        return em.createQuery(
+                        "delete from Link l"+
+                                " where l.folder.id= :folderId")
+                .setParameter("folderId",folderId)
+                .executeUpdate();
+    }
 }

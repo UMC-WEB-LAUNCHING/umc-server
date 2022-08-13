@@ -1,7 +1,9 @@
 package com.umc.helper.memo.model;
 
+import com.umc.helper.file.exception.FileNotFoundException;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.model.Member;
+import com.umc.helper.memo.exception.MemoNotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -48,5 +50,12 @@ public class Memo {
 
     public void setMember(Member member){
         this.member=member;
+    }
+
+    //==조회 로직==//
+    public void notExistMemo(){
+        if(this==null) {
+            throw new MemoNotFoundException();
+        }
     }
 }

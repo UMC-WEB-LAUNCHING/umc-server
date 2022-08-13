@@ -28,6 +28,14 @@ public class FolderRepository {
                 .getResultList();
     }
 
+    public List<Folder> findEveryByTeamId(Long teamId){
+        return em.createQuery(
+                        "select f from Folder f"+
+                                " where f.team.teamIdx= :teamId", Folder.class)
+                .setParameter("teamId",teamId)
+                .getResultList();
+    }
+
     public List<Folder> findAllByMemberId(Long memberId){
         return em.createQuery(
                 "select f from Folder f"+
@@ -62,6 +70,15 @@ public class FolderRepository {
                 .executeUpdate();
 
     }
+
+    public int removeFolderByTeamId(Long teamId){
+        return em.createQuery(
+                        "delete from Folder f"+
+                               " where f.team.teamIdx= :teamId")
+                .setParameter("teamId",teamId)
+                .executeUpdate();
+    }
+
 
 
 }

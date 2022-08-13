@@ -1,5 +1,7 @@
 package com.umc.helper.bookmark.model;
 
+import com.umc.helper.bookmark.exception.BookmarkNotFoundException;
+import com.umc.helper.file.exception.FileNotFoundException;
 import com.umc.helper.file.model.File;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.image.model.Image;
@@ -60,5 +62,11 @@ public class Bookmark {
     }
 
 
+    //==조회 로직==//
+    public void notExistBookmark(){
+        if(this==null) {
+            throw new BookmarkNotFoundException();
+        }
+    }
 
 }

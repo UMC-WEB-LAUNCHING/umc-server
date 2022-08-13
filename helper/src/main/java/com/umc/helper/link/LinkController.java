@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class LinkController {
      */
     //link/{folderId}
     @GetMapping("folder/{folderId}/links") // url이 뭔가 이상함
-    public BaseResponse<List<GetLinksResponse>> getLinks(@PathVariable("folderId") Long folderId){
+    public BaseResponse<List<GetLinksResponse>> getLinks(@PathVariable("folderId") @Valid Long folderId){
 
         List<GetLinksResponse> getLinksRes=linkService.retrieveLinks(folderId);
 
@@ -41,7 +43,7 @@ public class LinkController {
      * @return postLinkRes
      */
     @PostMapping("folder/link")
-    public BaseResponse<PostLinkResponse> uploadLink(@RequestBody PostLinkRequest postLinkReq){
+    public BaseResponse<PostLinkResponse> uploadLink(@RequestBody @Valid  PostLinkRequest postLinkReq){
 
         PostLinkResponse postLinkRes=linkService.uploadLink(postLinkReq);
 
@@ -55,7 +57,7 @@ public class LinkController {
      * @return modifiedLink
      */
     @PatchMapping("folder/link/{linkId}")
-    public BaseResponse<PatchLinkResponse> modifyLink(@PathVariable("linkId") Long linkId, @RequestBody PatchLinkRequest patchLinkRequest){
+    public BaseResponse<PatchLinkResponse> modifyLink(@PathVariable("linkId") @Valid  Long linkId, @RequestBody @Valid  PatchLinkRequest patchLinkRequest){
 
         PatchLinkResponse modifiedLink=linkService.modifyLink(linkId,patchLinkRequest);
 
@@ -69,7 +71,7 @@ public class LinkController {
      * @return modifiedLinkStatus
      */
     @PatchMapping("folder/link/trash/{linkId}/{memberId}")
-    public BaseResponse<PatchLinkStatusResponse> modifyLinkStatus(@PathVariable("linkId") Long linkId,@PathVariable("memberId") Long memberId){
+    public BaseResponse<PatchLinkStatusResponse> modifyLinkStatus(@PathVariable("linkId") @Valid  Long linkId,@PathVariable("memberId") @Valid  Long memberId){
 
         PatchLinkStatusResponse modifiedLinkStatus=linkService.modifyLinkStatus(linkId,memberId);
 
@@ -79,14 +81,15 @@ public class LinkController {
     /**
      * 링크 북마크 등록
      * register link in bookmark
+     * @param folderId
      * @param linkId
      * @param memberId
      * @return addedBookmark
      */
-    @PostMapping("folder/link/bookmark/{linkId}/{memberId}")
-    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("linkId") Long linkId, @PathVariable("memberId") Long memberId){
+    @PostMapping("folder/link/bookmark/{folderId}/{linkId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("folderId") @Valid  Long folderId,@PathVariable("linkId") @Valid Long linkId, @PathVariable("memberId") @Valid  Long memberId){
 
-        PostBookmarkResponse addedBookmark=linkService.addBookmark(linkId,memberId);
+        PostBookmarkResponse addedBookmark=linkService.addBookmark(folderId,linkId,memberId);
 
         return new BaseResponse<>(addedBookmark);
     }

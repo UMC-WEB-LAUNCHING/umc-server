@@ -1,6 +1,8 @@
 package com.umc.helper.link.model;
 
+import com.umc.helper.file.exception.FileNotFoundException;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.link.exception.LinkNotFoundException;
 import com.umc.helper.member.model.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +48,13 @@ public class Link {
 
     public void setMember(Member member){
         this.member=member;
+    }
+
+    //==조회 로직==//
+    public void notExistLink(){
+        if(this==null) {
+            throw new LinkNotFoundException();
+        }
     }
 
 }

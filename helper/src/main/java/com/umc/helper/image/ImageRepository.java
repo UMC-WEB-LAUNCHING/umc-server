@@ -80,4 +80,11 @@ public class ImageRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
+    public int removeEveryByFolderId(Long folderId){
+        return em.createQuery(
+                        "delete from Image i"+
+                                " where i.folder.id= :folderId")
+                .setParameter("folderId",folderId)
+                .executeUpdate();
+    }
 }

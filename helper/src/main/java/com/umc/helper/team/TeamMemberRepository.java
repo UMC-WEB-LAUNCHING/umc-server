@@ -54,4 +54,14 @@ public class TeamMemberRepository {
                 .executeUpdate();
     }
 
+    public TeamMember findTeamMemberByMemberTeamId(Long teamId,Long memberId){
+        return em.createQuery("select tm from TeamMember tm"+
+                " where tm.team.teamIdx= :teamId"+
+                " and tm.member.id= :memberId",TeamMember.class)
+                .setParameter("teamId",teamId)
+                .setParameter("memberId",memberId)
+                .getSingleResult();
+
+    }
+
 }

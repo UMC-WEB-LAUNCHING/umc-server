@@ -1,7 +1,9 @@
 package com.umc.helper.team.model;
 
+import com.umc.helper.file.exception.FileNotFoundException;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.model.Member;
+import com.umc.helper.team.exception.TeamNotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,8 +38,16 @@ public class Team {
     private Member creator;
 
     private Boolean status;
+
+    private String profileImage;
     //==연관관계 편의 메서드==//
 
 
+    //==조회 로직==//
+    public void notExistTeam(){
+        if(this==null) {
+            throw new TeamNotFoundException();
+        }
+    }
 
 }

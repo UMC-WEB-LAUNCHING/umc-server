@@ -1,6 +1,7 @@
 package com.umc.helper.team.model;
 
 import com.umc.helper.member.model.Member;
+import com.umc.helper.team.exception.TeamMemberNotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,5 +39,11 @@ public class TeamMember {
         team.getMembers().add(this);
     }
 
+    //==조회 로직==//
+    public void notExistTeamMember(){
+        if(this==null){
+            throw new TeamMemberNotFoundException();
+        }
+    }
 
 }

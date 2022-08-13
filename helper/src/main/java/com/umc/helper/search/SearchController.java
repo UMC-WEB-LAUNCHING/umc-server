@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,7 +17,7 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/search")
-    public BaseResponse<List<GetSearchedResponse>> getSearchItems(@RequestParam String word,@RequestParam Long memberId){
+    public BaseResponse<List<GetSearchedResponse>> getSearchItems(@RequestParam @Valid String word, @RequestParam @Valid Long memberId){
         List<GetSearchedResponse> getSearchedRes=searchService.getSearchItems(word,memberId);
 
         return new BaseResponse<>(getSearchedRes);

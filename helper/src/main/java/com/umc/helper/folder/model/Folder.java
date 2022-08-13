@@ -1,14 +1,18 @@
 package com.umc.helper.folder.model;
 
 import com.umc.helper.file.model.File;
+import com.umc.helper.folder.exception.FolderNotFoundException;
+import com.umc.helper.folder.exception.InvalidUploaderException;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.model.Link;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.memo.model.Memo;
 import com.umc.helper.team.model.Team;
+import com.umc.helper.team.model.TeamMember;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,4 +68,17 @@ public class Folder {
         this.team=team;
         team.getFolders().add(this);
     }
+
+    //==조회 로직==//
+    public void notExistFolder(){
+        if(this ==null) throw new FolderNotFoundException();
+    }
+
+    public void invalidUploader(Long memberId){
+        if(this.member.getId()!=memberId){
+            throw new InvalidUploaderException();
+        }
+    }
+
+
 }

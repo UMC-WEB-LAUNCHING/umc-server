@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,25 +22,24 @@ public class BookmarkController {
     private final BookmarkService bookMarkService;
 
     /**
-     * TODO: 시간 순 정렬 필요
-     * retreive bookmarks
+     * delete bookmark
      * @param bookmarkId
      * @return result
      */
     @DeleteMapping("/bookmark/{bookmarkId}")
-    public BaseResponse<String> deleteBookmark(@PathVariable("bookmarkId") Long bookmarkId){
+    public BaseResponse<String> deleteBookmark(@PathVariable("bookmarkId") @Valid Long bookmarkId){
         String result=bookMarkService.deleteBookmark(bookmarkId);
 
         return new BaseResponse<>(result);
     }
 
     /**
-     * delete bookmark
+     * retreive bookmarks
      * @param memberId
      * @return getBookmarksRes
      */
     @GetMapping("/bookmark/{memberId}")
-    public BaseResponse<List<GetBookmarksResponse>> getBookmarks(@PathVariable("memberId") Long memberId){
+    public BaseResponse<List<GetBookmarksResponse>> getBookmarks(@PathVariable("memberId") @Valid Long memberId){
         List<GetBookmarksResponse> getBookmarksRes=bookMarkService.retrieveBookmarks(memberId);
 
         return new BaseResponse<>(getBookmarksRes);

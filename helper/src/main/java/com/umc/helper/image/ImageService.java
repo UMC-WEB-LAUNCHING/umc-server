@@ -7,11 +7,14 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
+import com.umc.helper.file.model.File;
 import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.image.model.*;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
+import com.umc.helper.team.TeamMemberRepository;
+import com.umc.helper.team.model.TeamMember;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,7 @@ public class ImageService {
     private final FolderRepository folderRepository;
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     private final AmazonS3Client amazonS3Client;
     Logger log= LoggerFactory.getLogger(ImageService.class);
@@ -61,6 +65,8 @@ public class ImageService {
      */
     @Transactional
     public List<GetImagesResponse> retrieveImages(Long folderId){
+        Folder folder=folderRepository.findById(folderId);
+        folder.notExistFolder(); // 폴더 존재 확인
 
         List<GetImagesResponse> result=imageRepository.findAllInfoByFolderId(folderId);
 
@@ -74,7 +80,17 @@ public class ImageService {
     public PostImageResponse uploadImage(PostImageRequest postImageReq){
 
         Folder folder=folderRepository.findById(postImageReq.getFolderId());
-        Optional<Member> member=memberRepository.findById(postImageReq.getMemberId());
+        folder.notExistFolder(); // 폴더 존재 확인
+
+        Member member=memberRepository.findById(postImageReq.getMemberId()).get();
+        member.notExistMember(); // 업로더 존재 확인
+
+        // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
+        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더
+        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+            teamMember.notExistTeamMember();
+        }
 
         ObjectMetadata objectMetadata=new ObjectMetadata();
         objectMetadata.setContentType(postImageReq.getMultipartFile().getContentType());
@@ -101,7 +117,7 @@ public class ImageService {
         image.setOriginalFileName(originalFileName);
         image.setFilePath(storeFileUrl);
         image.setFolder(folder);
-        image.setMember(member.get());
+        image.setMember(member);
         image.setVolume(postImageReq.getMultipartFile().getSize());
         image.setStatus(Boolean.TRUE);
         image.setUploadDate(LocalDateTime.now());
@@ -114,17 +130,21 @@ public class ImageService {
     }
 
     /**
-     *  이미지 상태 변경
+     *  이미지 상태 변경 - 쓰레기통으로,,,
      */
     @Transactional
     public PatchImageStatusResponse modifyImageStatus(Long imageId, Long memberId){
 
         Image image=imageRepository.findById(imageId);
+        image.notExistImage(); // 이미지 존재 확인
+
+        Folder folder=folderRepository.findById(image.getFolder().getId());
+
         // 파일 올린 사람과 파일 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
         if(image.getMember().getId()==memberId) {
             image.setStatus(Boolean.FALSE);
             image.setStatusModifiedDate(LocalDateTime.now());
-
+            folder.setLastModifiedDate(image.getStatusModifiedDate());
         }
 
         return new PatchImageStatusResponse(image);
@@ -134,10 +154,23 @@ public class ImageService {
      *  이미지 북마크 등록
      */
     @Transactional
-    public PostBookmarkResponse addBookmark(Long imageId, Long memberId){
+    public PostBookmarkResponse addBookmark(Long folderId, Long imageId, Long memberId){
 
         Member member=memberRepository.findById(memberId).get();
+        member.notExistMember();
+
         Image image=imageRepository.findById(imageId);
+        image.notExistImage(); // 이미지 존재 확인
+
+        Folder folder=folderRepository.findById(folderId);
+        folder.notExistFolder(); // 폴더 존재 확인
+
+        // 파일 북마크 등록 권한 확인 TODO: 코드 리팩토링 필요
+        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더 내 파일
+        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더 내 파일
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+            teamMember.notExistTeamMember();
+        }
 
         Bookmark bookmark=new Bookmark();
         bookmark.setImage(image);
@@ -164,6 +197,8 @@ public class ImageService {
     @Transactional
     public PatchImageResponse modifyImage(Long imageId,PatchImageRequest patchImageReq){
         Image image=imageRepository.findById(imageId);
+        image.notExistImage(); // 이미지 존재 확인
+
         Folder folder=folderRepository.findById(image.getFolder().getId());
 
         if(image.getMember().getId()==patchImageReq.getMemberId()){

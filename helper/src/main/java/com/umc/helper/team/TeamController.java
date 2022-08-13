@@ -4,6 +4,9 @@ import com.umc.helper.config.BaseResponse;
 import com.umc.helper.team.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +20,7 @@ public class TeamController {
      * @return postTeamRes
      */
     @PostMapping("team")
-    public BaseResponse<PostTeamResponse> createTeam(@RequestBody PostTeamRequestList postTeamReq){
+    public BaseResponse<PostTeamResponse> createTeam(@RequestBody  @Valid PostTeamRequestList postTeamReq){
         PostTeamResponse postTeamRes=teamService.createTeam(postTeamReq);
 
         return new BaseResponse<>(postTeamRes);
@@ -29,7 +32,7 @@ public class TeamController {
      * @return getTeamsRes
      */
    @GetMapping("team/{memberId}")
-    public BaseResponse<GetTeamsResponse> getTeams(@PathVariable("memberId") Long memberId){
+    public BaseResponse<GetTeamsResponse> getTeams(@PathVariable("memberId") @Valid  Long memberId){
         GetTeamsResponse getTeamsRes=teamService.retrieveTeams(memberId);
 
         return new BaseResponse<>(getTeamsRes);
@@ -41,7 +44,7 @@ public class TeamController {
      * @return postTeamInvitationRes
      */
     @PostMapping("team/invite")
-    public BaseResponse<PostTeamInvitationResponse> inviteTeamMembers(@RequestBody PostTeamInvitationRequest postTeamInvitationReq){
+    public BaseResponse<PostTeamInvitationResponse> inviteTeamMembers(@RequestBody @Valid  PostTeamInvitationRequest postTeamInvitationReq){
         PostTeamInvitationResponse postTeamInvitationRes=teamService.inviteTeamMembers(postTeamInvitationReq);
 
        return new BaseResponse<>(postTeamInvitationRes);
@@ -55,7 +58,7 @@ public class TeamController {
      * @return deleteTeamRes
      */
     @DeleteMapping("team/delete/{teamId}/{memberId}")
-    public BaseResponse<DeleteTeamResponse> deleteTeam(@PathVariable("teamId") Long teamId, @PathVariable("memberId") Long memberId){
+    public BaseResponse<DeleteTeamResponse> deleteTeam(@PathVariable("teamId")  @Valid Long teamId, @PathVariable("memberId") @Valid  Long memberId){
         DeleteTeamResponse deleteTeamRes=teamService.deleteTeam(teamId,memberId);
 
         return new BaseResponse<>(deleteTeamRes);
@@ -68,9 +71,25 @@ public class TeamController {
      * @return
      */
     @DeleteMapping("team/exit/{teamId}/{memberId}")
-    public BaseResponse<DeleteTeamMemberResponse> deleteMemberFromTeam(@PathVariable("teamId") Long teamId, @PathVariable("memberId") Long memberId){
+    public BaseResponse<DeleteTeamMemberResponse> deleteMemberFromTeam(@PathVariable("teamId") @Valid  Long teamId, @PathVariable("memberId") @Valid  Long memberId){
         DeleteTeamMemberResponse deleteTeamMemberRes=teamService.deleteMemberFromTeam(teamId,memberId);
 
         return new BaseResponse<>(deleteTeamMemberRes);
+    }
+
+    // 팀 프로필 사진 변경
+    @PatchMapping("team/edit/profile/{teamId}")
+    public BaseResponse<PatchTeamInfoResponse> editTeamProfile(@PathVariable("teamId") @Valid Long teamId, @RequestParam @Valid MultipartFile profile){
+        PatchTeamInfoResponse patchTeamInfoRes=teamService.editProfile(teamId,profile);
+
+        return new BaseResponse<>(patchTeamInfoRes);
+    }
+
+    // 팀 이름 변경
+    @PatchMapping("team/edit/name/{teamId}")
+    public BaseResponse<PatchTeamInfoResponse> editTeamName(@PathVariable("teamId") @Valid Long teamId,@RequestBody @Valid PatchTeamNameRequest patchTeamNameReq){
+        PatchTeamInfoResponse patchTeamInfoRes=teamService.editName(teamId,patchTeamNameReq);
+
+        return new BaseResponse<>(patchTeamInfoRes);
     }
 }

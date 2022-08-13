@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -71,6 +72,13 @@ public class FileRepository {
                 .setParameter("status",Boolean.FALSE)
                 .executeUpdate();
     }
+    public int removeEveryByFolderId(Long folderId){
+        return em.createQuery(
+                        "delete from File f"+
+                                " where f.folder.id= :folderId")
+                .setParameter("folderId",folderId)
+                .executeUpdate();
+    }
 
     public List<File> findByWord(String word,List<Long> folderIds){
         word="%"+word+"%";
@@ -84,4 +92,6 @@ public class FileRepository {
                 .setParameter("folderIds",folderIds)
                 .getResultList();
     }
+
+
 }

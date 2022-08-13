@@ -7,7 +7,10 @@ import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
+import com.umc.helper.memo.exception.MemoSizeException;
 import com.umc.helper.memo.model.*;
+import com.umc.helper.team.TeamMemberRepository;
+import com.umc.helper.team.model.TeamMember;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,7 @@ public class MemoService {
     private final MemoRepository memoRepository;
     private final FolderRepository folderRepository;
     private final MemberRepository memberRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     private final BookmarkRepository bookmarkRepository;
 
@@ -50,6 +54,8 @@ public class MemoService {
      */
     @Transactional
     public List<GetMemosResponse> retrieveMemos(Long folderId){
+        Folder folder=folderRepository.findById(folderId);
+        folder.notExistFolder();
 
         List<GetMemosResponse> result= memoRepository.findAllInfoByFolderId(folderId);
 
@@ -61,14 +67,27 @@ public class MemoService {
      */
     @Transactional
     public PostMemoResponse uploadMemo(PostMemoRequest postMemoReq){
+
+        if(postMemoReq.getContent().length()>500) throw new MemoSizeException(); // 메모 내용 길이 확인
+
         Folder folder=folderRepository.findById(postMemoReq.getFolderId());
-        Optional<Member> member=memberRepository.findById(postMemoReq.getMemberId());
+        folder.notExistFolder(); // 폴더 존재 확인
+
+        Member member=memberRepository.findById(postMemoReq.getMemberId()).get();
+        member.notExistMember(); // 업로더 존재 확인
+
+        // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
+        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더
+        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+            teamMember.notExistTeamMember();
+        }
 
         Memo memo=new Memo();
         memo.setName(postMemoReq.getName());
         memo.setContent(postMemoReq.getContent());
         memo.setFolder(folder);
-        memo.setMember(member.get());
+        memo.setMember(member);
         memo.setStatus(Boolean.TRUE);
         memo.setUploadDate(LocalDateTime.now());
         folder.setLastModifiedDate(LocalDateTime.now());
@@ -91,7 +110,7 @@ public class MemoService {
             memo.setName(patchMemoRequest.getName());
             memo.setContent(patchMemoRequest.getContent());
             memo.setLastModifiedDate(LocalDateTime.now());
-            folder.setLastModifiedDate(LocalDateTime.now()); // TODO: memo lastModifiedDAte하고 folder lastModifiedDate하고 맞춰야함
+            folder.setLastModifiedDate(memo.getLastModifiedDate());
         }
 
 
@@ -105,11 +124,15 @@ public class MemoService {
     public PatchMemoStatusResponse modifyMemoStatus(Long memoId, Long memberId){
 
         Memo memo=memoRepository.findById(memoId);
+        memo.notExistMemo();
+
+        Folder folder=folderRepository.findById(memo.getFolder().getId());
+
         // 메모 올린 사람과 메모 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
         if(memo.getMember().getId()==memberId) {
             memo.setStatus(Boolean.FALSE);
             memo.setStatusModifiedDate(LocalDateTime.now());
-
+            folder.setLastModifiedDate(memo.getStatusModifiedDate());
         }
 
         return new PatchMemoStatusResponse(memo);
@@ -119,10 +142,24 @@ public class MemoService {
      *  메모 북마크 등록
      */
     @Transactional
-    public PostBookmarkResponse addBookmark(Long memoId, Long memberId){
+    public PostBookmarkResponse addBookmark(Long folderId,Long memoId, Long memberId){
 
         Member member=memberRepository.findById(memberId).get();
+        member.notExistMember();
+
         Memo memo=memoRepository.findById(memoId);
+        memo.notExistMemo();
+
+        Folder folder=folderRepository.findById(folderId);
+        folder.notExistFolder(); // 폴더 존재 확인
+
+
+        // 파일 북마크 등록 권한 확인 TODO: 코드 리팩토링 필요
+        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더 내 파일
+        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더 내 파일
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+            teamMember.notExistTeamMember();
+        }
 
         Bookmark bookmark=new Bookmark();
         bookmark.setMemo(memo);

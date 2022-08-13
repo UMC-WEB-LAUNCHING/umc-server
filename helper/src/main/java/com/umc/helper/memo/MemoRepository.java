@@ -84,4 +84,11 @@ public class MemoRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
+    public int removeEveryByFolderId(Long folderId){
+        return em.createQuery(
+                        "delete from Memo m"+
+                                " where m.folder.id= :folderId")
+                .setParameter("folderId",folderId)
+                .executeUpdate();
+    }
 }

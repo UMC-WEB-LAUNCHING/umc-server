@@ -9,6 +9,7 @@ import com.umc.helper.folder.model.PostFolderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class FolderController {
      * @return postFolderRes
      */
     @PostMapping("folder")
-    public BaseResponse<PostFolderResponse> createFolder(@RequestBody PostFolderRequest postFolderReq){
+    public BaseResponse<PostFolderResponse> createFolder(@RequestBody @Valid PostFolderRequest postFolderReq){
         PostFolderResponse postFolderRes=folderService.createFolder(postFolderReq);
 
         return new BaseResponse<>(postFolderRes);
@@ -36,7 +37,7 @@ public class FolderController {
      * @return getFoldersRes
      */
     @GetMapping("folder/{folder_case}/{id}") // folder_case: team, member / id: team_id or member_id
-    public BaseResponse<List<GetFoldersResponse>> getFolders(@PathVariable("folder_case") String folder_case, @PathVariable("id") Long id){
+    public BaseResponse<List<GetFoldersResponse>> getFolders(@PathVariable("folder_case") @Valid String folder_case, @PathVariable("id") @Valid Long id){
         List<GetFoldersResponse> getFoldersRes=folderService.retrieveFolder(folder_case,id);
 
         return new BaseResponse<>(getFoldersRes);
@@ -49,7 +50,7 @@ public class FolderController {
      * @return patchFolderRes
      */
     @PatchMapping("folder/{folder_id}/{creator_id}")
-    public BaseResponse<PatchFolderResponse> modifyFolderStatus(@PathVariable("folder_id") Long folder_id,@PathVariable("creator_id") Long creator_id){
+    public BaseResponse<PatchFolderResponse> modifyFolderStatus(@PathVariable("folder_id") @Valid Long folder_id,@PathVariable("creator_id") @Valid Long creator_id){
         PatchFolderResponse patchFolderRes=folderService.modifyFolderStatus(folder_id,creator_id);
 
         return new BaseResponse<>(patchFolderRes);
@@ -62,7 +63,7 @@ public class FolderController {
      * @return addedBookmark
      */
     @PostMapping("folder/bookmark/{folderId}/{memberId}")
-    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("folderId")Long folderId, @PathVariable("memberId") Long memberId){
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("folderId") @Valid Long folderId, @PathVariable("memberId") @Valid Long memberId){
 
         PostBookmarkResponse addedBookmark=folderService.addBookmark(folderId,memberId);
 

@@ -1,6 +1,8 @@
 package com.umc.helper.image.model;
 
+import com.umc.helper.file.exception.FileNotFoundException;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.image.exception.ImageNotFoundException;
 import com.umc.helper.member.model.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,4 +56,10 @@ public class Image {
         this.member=member;
     }
 
+    //==조회 로직==//
+    public void notExistImage(){
+        if(this==null) {
+            throw new ImageNotFoundException();
+        }
+    }
 }

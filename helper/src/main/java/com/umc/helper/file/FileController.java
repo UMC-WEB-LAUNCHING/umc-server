@@ -14,7 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -33,7 +35,7 @@ public class FileController {
      * @return getFilesRes
      */
     @GetMapping("folder/{folderId}/files")
-    public BaseResponse<List<GetFilesResponse>> getFiles(@PathVariable("folderId") Long folderId){
+    public BaseResponse<List<GetFilesResponse>> getFiles(@PathVariable("folderId") Long folderId) {
 
         List<GetFilesResponse> getFilesRes=fileService.retrieveFiles(folderId);
 
@@ -49,7 +51,7 @@ public class FileController {
      * @return postFileRes
      */
     @PostMapping("folder/file") //BaseResponse<PostFileResponse>
-    public BaseResponse<PostFileResponse> uploadFile(@RequestParam("multipartFile") MultipartFile multipartFile, @RequestParam("folderId") Long folderId, @RequestParam("memberId") Long memberId){
+    public BaseResponse<PostFileResponse> uploadFile(@RequestParam("multipartFile") @Valid MultipartFile multipartFile, @RequestParam("folderId") @Valid Long folderId, @RequestParam("memberId") @Valid Long memberId){
         PostFileRequest postFileReq=new PostFileRequest(multipartFile,folderId,memberId);
         PostFileResponse postFileRes=fileService.uploadFile(postFileReq);
 
@@ -63,7 +65,7 @@ public class FileController {
      * @return modifiedFileStatus
      */
     @PatchMapping("folder/file/trash/{fileId}/{memberId}") // TODO: url 수정 필요
-    public BaseResponse<PatchFileStatusResponse> modifyLinkStatus(@PathVariable("fileId") Long fileId, @PathVariable("memberId") Long memberId){
+    public BaseResponse<PatchFileStatusResponse> modifyLinkStatus(@PathVariable("fileId") @Valid Long fileId, @PathVariable("memberId") @Valid Long memberId){
 
         PatchFileStatusResponse modifiedFileStatus=fileService.modifyFileStatus(fileId,memberId);
 
@@ -77,7 +79,7 @@ public class FileController {
      * @return
      */
     @PatchMapping("folder/file/{fileId}")
-    public BaseResponse<PatchFileResponse> modifyFile(@PathVariable("fileId") Long fileId, @RequestBody PatchFileRequest patchFileReq){
+    public BaseResponse<PatchFileResponse> modifyFile(@PathVariable("fileId") Long fileId, @RequestBody @Valid PatchFileRequest patchFileReq){
         PatchFileResponse modifiedFile=fileService.modifyFile(fileId,patchFileReq);
 
         return new BaseResponse<>(modifiedFile);
@@ -85,14 +87,15 @@ public class FileController {
     /**
      * 파일 북마크 등록
      * register file in bookmark
+     * @param folderId
      * @param fileId
      * @param memberId
      * @return addedBookmark
      */
-    @PostMapping("folder/file/bookmark/{fileId}/{memberId}")
-    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("fileId") Long fileId, @PathVariable("memberId") Long memberId){
+    @PostMapping("folder/file/bookmark/{folderId}/{fileId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("folderId") Long folderId, @PathVariable("fileId") @Valid Long fileId, @PathVariable("memberId") @Valid Long memberId){
 
-        PostBookmarkResponse addedBookmark=fileService.addBookmark(fileId,memberId);
+        PostBookmarkResponse addedBookmark=fileService.addBookmark(folderId,fileId,memberId);
 
         return new BaseResponse<>(addedBookmark);
     }

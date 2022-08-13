@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class MemoController {
      */
     //memo/{folderId}
     @GetMapping("folder/{folderId}/memos") // url이 뭔가 이상함 TODO: url 수정 필요
-    public BaseResponse<List<GetMemosResponse>> getMemos(@PathVariable("folderId") Long folderId){
+    public BaseResponse<List<GetMemosResponse>> getMemos(@PathVariable("folderId")  @Valid Long folderId){
 
         List<GetMemosResponse> getMemosRes=memoService.retrieveMemos(folderId);
 
@@ -40,7 +41,7 @@ public class MemoController {
      * @return postMemoRes
      */
     @PostMapping("folder/memo")
-    public BaseResponse<PostMemoResponse> uploadMemo(@RequestBody PostMemoRequest postMemoReq){
+    public BaseResponse<PostMemoResponse> uploadMemo(@RequestBody  @Valid PostMemoRequest postMemoReq){
 
         PostMemoResponse postMemoRes=memoService.uploadMemo(postMemoReq);
 
@@ -54,7 +55,7 @@ public class MemoController {
      * @return modifiedMemo
      */
     @PatchMapping("folder/memo/{memoId}")
-    public BaseResponse<PatchMemoResponse> modifyMemo(@PathVariable("memoId") Long memoId, @RequestBody PatchMemoRequest patchMemoRequest){
+    public BaseResponse<PatchMemoResponse> modifyMemo(@PathVariable("memoId") @Valid  Long memoId, @RequestBody @Valid  PatchMemoRequest patchMemoRequest){
 
         PatchMemoResponse modifiedMemo=memoService.modifyMemo(memoId,patchMemoRequest);
 
@@ -68,7 +69,7 @@ public class MemoController {
      * @return modifiedMemoStatus
      */
     @PatchMapping("folder/memo/trash/{memoId}/{memberId}") // TODO: url 수정 필요
-    public BaseResponse<PatchMemoStatusResponse> modifyMemoStatus(@PathVariable("memoId") Long memoId, @PathVariable("memberId") Long memberId){
+    public BaseResponse<PatchMemoStatusResponse> modifyMemoStatus(@PathVariable("memoId") @Valid  Long memoId, @PathVariable("memberId") @Valid  Long memberId){
 
         PatchMemoStatusResponse modifiedMemoStatus=memoService.modifyMemoStatus(memoId,memberId);
         // TODO: 북마크에서 삭제 필요
@@ -83,10 +84,10 @@ public class MemoController {
      * @param memberId
      * @return addedBookmark
      */
-    @PostMapping("folder/memo/bookmark/{memoId}/{memberId}")
-    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("memoId") Long memoId, @PathVariable("memberId") Long memberId){
+    @PostMapping("folder/memo/bookmark/{folderId}/{memoId}/{memberId}")
+    public BaseResponse<PostBookmarkResponse> addBookmark(@PathVariable("folderId") @Valid  Long folderId,@PathVariable("memoId") @Valid  Long memoId, @PathVariable("memberId") @Valid  Long memberId){
 
-        PostBookmarkResponse addedBookmark=memoService.addBookmark(memoId,memberId);
+        PostBookmarkResponse addedBookmark=memoService.addBookmark(folderId,memoId,memberId);
 
         return new BaseResponse<>(addedBookmark);
     }

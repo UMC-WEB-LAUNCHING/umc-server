@@ -11,8 +11,11 @@ import com.umc.helper.image.ImageService;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.LinkRepository;
 import com.umc.helper.link.model.Link;
+import com.umc.helper.member.MemberRepository;
+import com.umc.helper.member.model.Member;
 import com.umc.helper.memo.MemoRepository;
 import com.umc.helper.memo.model.Memo;
+import com.umc.helper.trash.exception.RestoreInvalidUser;
 import com.umc.helper.trash.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,7 @@ public class TrashService {
     private final ImageRepository imageRepository;
     private final LinkRepository linkRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final MemberRepository memberRepository;
 
     private final FolderRepository folderRepository;
 
@@ -117,13 +121,17 @@ public class TrashService {
                 bookmarkRepository.removeBookmarkLink(link.getId(),memberId);
                 linkRepository.remove(link);
             }
-            // TODO: 폴더 내 데이터 삭제
             else if(item.getCategory().equals("folder")){
                 Folder folder=folderRepository.findById(item.getId());
                 category="folder";
                 id=folder.getId();
                 memberId=folder.getCreatorId();
                 bookmarkRepository.removeBookmarkFolder(folder.getId(),memberId);
+                memoRepository.removeEveryByFolderId(folder.getId());
+                fileRepository.removeEveryByFolderId(folder.getId());
+                linkRepository.removeEveryByFolderId(folder.getId());
+                imageRepository.removeEveryByFolderId(folder.getId());
+
                 folderRepository.remove(folder);
             }
             result.add(new DeleteItemsResponse(category,id,memberId));
@@ -173,11 +181,15 @@ public class TrashService {
         }
         int fileDeletedCount=fileRepository.removeTrashByMemberId(memberId);
 
-        // 북마크된 폴더 삭제 후 폴더 영구 삭제 TODO: 폴더 내 데이터 삭제
+        // 북마크된 폴더 삭제 후 폴더 영구 삭제
         List<Folder> deletedFolder=folderRepository.findTrashByMemberId(memberId);
         for(Folder f:deletedFolder){
             Long folderId=f.getId();
             bookmarkRepository.removeBookmarkFolder(folderId,memberId);
+            memoRepository.removeEveryByFolderId(folderId);
+            fileRepository.removeEveryByFolderId(folderId);
+            linkRepository.removeEveryByFolderId(folderId);
+            imageRepository.removeEveryByFolderId(folderId);
         }
         int folderDeletedCount=folderRepository.removeTrashByMemberId(memberId);
 
@@ -189,7 +201,11 @@ public class TrashService {
      * 휴지통 항목 복구
      */
     @Transactional
-    public PatchRestoreItemResponse restoreItem(String itemCategory,Long itemId){
+    public PatchRestoreItemResponse restoreItem(String itemCategory,Long itemId,Long memberId){
+
+        Member member=memberRepository.findById(memberId).get();
+        if(member.getId()!=memberId) throw new RestoreInvalidUser(); // 휴지통 항목 복구 권한 확인
+
         if(itemCategory.equals("file")){
             File file=fileRepository.findById(itemId);
             file.setStatusModifiedDate(LocalDateTime.now());

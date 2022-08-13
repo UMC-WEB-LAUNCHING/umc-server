@@ -9,9 +9,12 @@ import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
 import com.umc.helper.file.model.*;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.exception.FolderNotFoundException;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
+import com.umc.helper.team.TeamMemberRepository;
+import com.umc.helper.team.model.TeamMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -37,6 +41,7 @@ public class FileService {
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
 
+    private final TeamMemberRepository teamMemberRepository;
     private final AmazonS3Client amazonS3Client;
     Logger log= LoggerFactory.getLogger(FileService.class);
 
@@ -63,6 +68,8 @@ public class FileService {
      */
     @Transactional
     public List<GetFilesResponse> retrieveFiles(Long folderId){
+        Folder folder=folderRepository.findById(folderId);
+        folder.notExistFolder();
 
         List<GetFilesResponse> result=fileRepository.findAllInfoByFolderId(folderId);
 
@@ -76,7 +83,17 @@ public class FileService {
     public PostFileResponse uploadFile(PostFileRequest postFileReq){
 
         Folder folder=folderRepository.findById(postFileReq.getFolderId());
-        Optional<Member> member=memberRepository.findById(postFileReq.getMemberId());
+        folder.notExistFolder(); // 폴더 존재 확인
+
+        Member member=memberRepository.findById(postFileReq.getMemberId()).get();
+        member.notExistMember(); // 업로더 존재 확인
+
+        // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
+        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더
+        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+            teamMember.notExistTeamMember();
+        }
 
         ObjectMetadata objectMetadata=new ObjectMetadata();
         objectMetadata.setContentType(postFileReq.getMultipartFile().getContentType());
@@ -103,7 +120,7 @@ public class FileService {
         file.setOriginalFileName(originalFileName);
         file.setFilePath(storeFileUrl);
         file.setFolder(folder);
-        file.setMember(member.get());
+        file.setMember(member);
         file.setVolume(postFileReq.getMultipartFile().getSize());
         file.setStatus(Boolean.TRUE);
         file.setUploadDate(LocalDateTime.now());
@@ -123,10 +140,15 @@ public class FileService {
     public PatchFileStatusResponse modifyFileStatus(Long fileId, Long memberId){
 
         File file=fileRepository.findById(fileId);
+        file.notExistFile(); // 파일 존재 확인
+
+        Folder folder=folderRepository.findById(file.getFolder().getId());
+
         // 파일 올린 사람과 파일 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
         if(file.getMember().getId()==memberId) {
             file.setStatus(Boolean.FALSE);
             file.setStatusModifiedDate(LocalDateTime.now());
+            folder.setLastModifiedDate(file.getStatusModifiedDate());
         }
 
         return new PatchFileStatusResponse(file);
@@ -136,10 +158,24 @@ public class FileService {
      *  파일 북마크 등록
      */
     @Transactional
-    public PostBookmarkResponse addBookmark(Long fileId, Long memberId){
+    public PostBookmarkResponse addBookmark(Long folderId, Long fileId, Long memberId){
 
         Member member=memberRepository.findById(memberId).get();
+        member.notExistMember();
+
         File file=fileRepository.findById(fileId);
+        file.notExistFile();
+
+        Folder folder=folderRepository.findById(folderId);
+        folder.notExistFolder(); // 폴더 존재 확인
+
+
+        // 파일 북마크 등록 권한 확인 TODO: 코드 리팩토링 필요
+        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더 내 파일
+        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더 내 파일
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+            teamMember.notExistTeamMember();
+        }
 
         Bookmark bookmark=new Bookmark();
         bookmark.setFile(file);
@@ -165,6 +201,8 @@ public class FileService {
     @Transactional
     public PatchFileResponse modifyFile(Long fileId, PatchFileRequest patchFileReq){
         File file=fileRepository.findById(fileId);
+        file.notExistFile();
+
         Folder folder=folderRepository.findById(file.getFolder().getId());
 
         if(file.getMember().getId()==patchFileReq.getMemberId()){
@@ -175,4 +213,5 @@ public class FileService {
 
         return new PatchFileResponse(file);
     }
+
 }

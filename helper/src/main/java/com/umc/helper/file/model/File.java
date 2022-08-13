@@ -1,5 +1,6 @@
 package com.umc.helper.file.model;
 
+import com.umc.helper.file.exception.FileNotFoundException;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.model.Member;
 import lombok.*;
@@ -48,6 +49,13 @@ public class File {
 
     public void setMember(Member member){
         this.member=member;
+    }
+
+    //==조회 로직==//
+    public void notExistFile(){
+        if(this==null) {
+            throw new FileNotFoundException();
+        }
     }
 
 
