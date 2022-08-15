@@ -37,7 +37,7 @@ public class FileRepository {
 
     public List<GetFilesResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,ff.id,bm.id,f.uploadDate,f.lastModifiedDate,f.volume)"+
+                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,ff.id,bm.id,f.uploadDate,f.lastModifiedDate,f.volume,f.member.profileImage)"+
                                 " from File f"+
                                 " join f.folder ff"+
                                 " left join Bookmark bm"+
@@ -47,6 +47,16 @@ public class FileRepository {
                 .setParameter("folderId",folderId)
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
+    }
+    public Long findDuplicateFileName(Long folderId,String fileName){
+        return em.createQuery(
+                        "select count(f.fileName) from File f"+
+                                " where f.fileName= :fileName"+
+                                " and f.folder.id= :folderId",Long.class)
+                .setParameter("fileName",fileName)
+                .setParameter("folderId",folderId)
+                .setMaxResults(1)
+                .getSingleResult();
     }
 
     public List<File> findTrashByMemberId(Long memberId){

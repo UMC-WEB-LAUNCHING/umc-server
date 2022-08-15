@@ -3,9 +3,14 @@ package com.umc.helper.link;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
+import com.umc.helper.file.exception.FileNameDuplicateException;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.exception.FolderNotFoundException;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.link.exception.LinkNameDuplicateException;
+import com.umc.helper.link.exception.LinkNotFoundException;
 import com.umc.helper.link.model.*;
+import com.umc.helper.member.exception.MemberNotFoundException;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.team.TeamMemberRepository;
@@ -56,7 +61,10 @@ public class LinkService {
     @Transactional
     public List<GetLinksResponse> retrieveLinks(Long folderId){
         Folder folder=folderRepository.findById(folderId);
-        folder.notExistFolder();
+        // 폴더 존재 확인
+        if(folder==null){
+            throw new FolderNotFoundException();
+        }
 
         List<GetLinksResponse> result= linkRepository.findAllInfoByFolderId(folderId);
 
@@ -73,15 +81,26 @@ public class LinkService {
     public PostLinkResponse uploadLink(PostLinkRequest postLinkReq){
 
         Folder folder=folderRepository.findById(postLinkReq.getFolderId());
-        folder.notExistFolder(); // 폴더 존재 확인
+        // 폴더 존재 확인
+        if(folder==null){
+            throw new FolderNotFoundException();
+        }
 
-        Member member=memberRepository.findById(postLinkReq.getMemberId()).get();
-        member.notExistMember(); // 업로더 존재 확인
+        // 업로더 존재 확인
+        Optional<Member> member=memberRepository.findById(postLinkReq.getMemberId());
+        if(member.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        // 폴더 내 동일 링크 이름 확인
+        if(linkRepository.findDuplicateLinkName(postLinkReq.getFolderId(),postLinkReq.getName())==1){
+            throw new LinkNameDuplicateException();
+        }
 
         // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
-        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더
-        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더
-            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+        if(folder.getMember()!=null) folder.invalidUploader(member.get().getId()); // 개인 폴더
+        else if(folder.getMember()==null && folder.getTeam()!=null){ // 팀 폴더
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.get().getId());
             teamMember.notExistTeamMember();
         }
 
@@ -89,10 +108,11 @@ public class LinkService {
         link.setName(postLinkReq.getName());
         link.setUrl(postLinkReq.getUrl());
         link.setFolder(folder);
-        link.setMember(member);
+        link.setMember(member.get());
         link.setStatus(Boolean.TRUE);
         link.setUploadDate(LocalDateTime.now());
-        folder.setLastModifiedDate(LocalDateTime.now());
+        link.setLastModifiedDate(link.getUploadDate());
+        folder.setLastModifiedDate(link.getLastModifiedDate());
         linkRepository.save(link);
 
         return new PostLinkResponse(linkRepository.findById(link.getId()).getId(), link.getUrl(), link.getName());
@@ -126,7 +146,10 @@ public class LinkService {
     public PatchLinkStatusResponse modifyLinkStatus(Long linkId,Long memberId){
 
         Link link=linkRepository.findById(linkId);
-        link.notExistLink(); // 링크 존재 확인
+        if(link==null){
+            throw new LinkNotFoundException();
+        }
+
 
         Folder folder=folderRepository.findById(link.getFolder().getId());
 
@@ -147,25 +170,34 @@ public class LinkService {
     @Transactional
     public PostBookmarkResponse addBookmark(Long folderId, Long linkId, Long memberId){
 
-        Member member=memberRepository.findById(memberId).get();
-        member.notExistMember();
+        // 업로더 존재 확인
+        Optional<Member> member=memberRepository.findById(memberId);
+        if(member.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
 
+        // 링크 존재 확인
         Link link=linkRepository.findById(linkId);
-        link.notExistLink(); // 링크 존재 확인
+        if(link==null){
+            throw new LinkNotFoundException();
+        }
 
         Folder folder=folderRepository.findById(folderId);
-        folder.notExistFolder(); // 폴더 존재 확인
+        // 폴더 존재 확인
+        if(folder==null){
+            throw new FolderNotFoundException();
+        }
 
         // 링크 북마크 등록 권한 확인 TODO: 코드 리팩토링 필요
-        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더 내 파일
-        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더 내 파일
-            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+        if(folder.getMember()!=null) folder.invalidUploader(member.get().getId()); // 개인 폴더 내 파일
+        else if(folder.getMember()==null && folder.getTeam()!=null){ // 팀 폴더 내 파일
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.get().getId());
             teamMember.notExistTeamMember();
         }
 
         Bookmark bookmark=new Bookmark();
         bookmark.setLink(link);
-        bookmark.setMember(member);
+        bookmark.setMember(member.get());
         bookmark.setCategory("link");
         bookmark.setAddedDate(LocalDateTime.now());
 

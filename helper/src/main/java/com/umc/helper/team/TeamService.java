@@ -9,12 +9,14 @@ import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.image.ImageRepository;
 import com.umc.helper.link.LinkRepository;
+import com.umc.helper.member.exception.MemberNotFoundException;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.member.model.PatchMemberInfoResponse;
 import com.umc.helper.member.model.PatchMemberNameRequest;
 import com.umc.helper.memo.MemoRepository;
 import com.umc.helper.team.exception.InvalidDeleteTeam;
+import com.umc.helper.team.exception.TeamNotFoundException;
 import com.umc.helper.team.model.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -68,11 +71,11 @@ public class TeamService {
 
         for(PostTeamRequest member: postTeamReq.getMembers()){
             TeamMember teamMember=new TeamMember();
-            teamMember.setMember(memberRepository.findById(member.getMemberId()).get());
+            teamMember.setMember(memberRepository.findByEmail(member.getMemberEmail()).get());
             teamMember.setTeam(team);
             members.add(teamMember);
 
-            memberNames.add(memberRepository.findById(member.getMemberId()).get().getUsername());
+            memberNames.add(memberRepository.findByEmail(member.getMemberEmail()).get().getUsername());
         }
         team.setMembers(members);
         team.setCreatedDate(LocalDateTime.now());
@@ -175,10 +178,16 @@ public class TeamService {
     @Transactional
     public DeleteTeamMemberResponse deleteMemberFromTeam(Long teamId,Long memberId){
         Team team=teamRepository.findById(teamId);
-        team.notExistTeam(); // 팀 존재 확인
+        if(team==null){
+            throw new TeamNotFoundException();
+        }
 
-        Member member=memberRepository.findById(memberId).get();
-        member.notExistMember(); // 멤버 존재 확인
+        // 유저 존재 확인
+        Optional<Member> member=memberRepository.findById(memberId);
+        if(member.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
 
         teamMemberRepository.removeTeamMemberByMemberTeamId(memberId,teamId);
 

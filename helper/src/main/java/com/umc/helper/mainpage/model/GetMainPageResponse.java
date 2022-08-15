@@ -17,7 +17,8 @@ public class GetMainPageResponse {
     private List<GetFoldersResponse> myFolderList;
     private List<GetFoldersResponse> teamFolderList;
     private List<GetFoldersResponse> allFolderList;
-    private List<GetFilesResponse> allFileList;
+    //private List<GetFilesResponse> allFileList;
+    private List<GetItemResponse> allItemList;
     private Long memberId;
     private String memberName;
 }

@@ -16,6 +16,7 @@ public class GetMemosResponse {
     private String content;
     private String name; // 메모 제목
     private String member_name; //uploader
+    private String uploaderImage;
     private String folder_name;
 
     private Long bookmarkId;
@@ -31,7 +32,7 @@ public class GetMemosResponse {
         lastModifiedDate=memo.getLastModifiedDate();
     }
 
-    public GetMemosResponse(Long memoId,String name, String content, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate){
+    public GetMemosResponse(Long memoId,String name, String content, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate,String uploaderImage){
         this.memoId=memoId;
         this.content=content;
         this.name=name;
@@ -40,6 +41,7 @@ public class GetMemosResponse {
         this.bookmarkId=bookmarkId;
         this.uploadDate=uploadDate;
         this.lastModifiedDate=lastModifiedDate;
+        this.uploaderImage=uploaderImage;
     }
 
 }

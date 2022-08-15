@@ -3,6 +3,7 @@ package com.umc.helper.config;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.umc.helper.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

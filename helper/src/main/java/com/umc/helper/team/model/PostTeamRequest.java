@@ -12,5 +12,5 @@ import java.util.List;
 public class PostTeamRequest {
 
 
-    private Long memberId;
+    private String memberEmail;
 }

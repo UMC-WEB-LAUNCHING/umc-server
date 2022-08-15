@@ -70,9 +70,6 @@ public class Folder {
     }
 
     //==조회 로직==//
-    public void notExistFolder(){
-        if(this ==null) throw new FolderNotFoundException();
-    }
 
     public void invalidUploader(Long memberId){
         if(this.member.getId()!=memberId){

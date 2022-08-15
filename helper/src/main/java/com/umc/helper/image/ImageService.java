@@ -7,10 +7,15 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
+import com.umc.helper.file.exception.FileNameDuplicateException;
 import com.umc.helper.file.model.File;
 import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.folder.exception.FolderNotFoundException;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.image.exception.ImageNameDuplicateException;
+import com.umc.helper.image.exception.ImageNotFoundException;
 import com.umc.helper.image.model.*;
+import com.umc.helper.member.exception.MemberNotFoundException;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.team.TeamMemberRepository;
@@ -66,7 +71,10 @@ public class ImageService {
     @Transactional
     public List<GetImagesResponse> retrieveImages(Long folderId){
         Folder folder=folderRepository.findById(folderId);
-        folder.notExistFolder(); // 폴더 존재 확인
+        // 폴더 존재 확인
+        if(folder==null){
+            throw new FolderNotFoundException();
+        }
 
         List<GetImagesResponse> result=imageRepository.findAllInfoByFolderId(folderId);
 
@@ -80,15 +88,27 @@ public class ImageService {
     public PostImageResponse uploadImage(PostImageRequest postImageReq){
 
         Folder folder=folderRepository.findById(postImageReq.getFolderId());
-        folder.notExistFolder(); // 폴더 존재 확인
+        // 폴더 존재 확인
+        if(folder==null){
+            throw new FolderNotFoundException();
+        }
 
-        Member member=memberRepository.findById(postImageReq.getMemberId()).get();
-        member.notExistMember(); // 업로더 존재 확인
+        // 업로더 존재 확인
+        Optional<Member> member=memberRepository.findById(postImageReq.getMemberId());
+        if(member.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        String originalFileName= postImageReq.getMultipartFile().getOriginalFilename();
+        // 폴더 내 동일 이미지 이름 확인
+        if(imageRepository.findDuplicateImageName(postImageReq.getFolderId(),originalFileName)==1){
+            throw new ImageNameDuplicateException();
+        }
 
         // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
-        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더
-        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더
-            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+        if(folder.getMember()!=null) folder.invalidUploader(member.get().getId()); // 개인 폴더
+        else if(folder.getMember()==null && folder.getTeam()!=null){ // 팀 폴더
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.get().getId());
             teamMember.notExistTeamMember();
         }
 
@@ -96,7 +116,6 @@ public class ImageService {
         objectMetadata.setContentType(postImageReq.getMultipartFile().getContentType());
         objectMetadata.setContentLength(postImageReq.getMultipartFile().getSize());
 
-        String originalFileName= postImageReq.getMultipartFile().getOriginalFilename();
         int index=originalFileName.lastIndexOf(".");
         String ext= originalFileName.substring(index+1); // 확장자
 
@@ -117,11 +136,12 @@ public class ImageService {
         image.setOriginalFileName(originalFileName);
         image.setFilePath(storeFileUrl);
         image.setFolder(folder);
-        image.setMember(member);
+        image.setMember(member.get());
         image.setVolume(postImageReq.getMultipartFile().getSize());
         image.setStatus(Boolean.TRUE);
         image.setUploadDate(LocalDateTime.now());
-        folder.setLastModifiedDate(LocalDateTime.now());
+        image.setLastModifiedDate(image.getUploadDate());
+        folder.setLastModifiedDate(image.getUploadDate());
         imageRepository.save(image);
 
         return new PostImageResponse(imageRepository.findById(image.getId()).getFilePath());
@@ -156,25 +176,33 @@ public class ImageService {
     @Transactional
     public PostBookmarkResponse addBookmark(Long folderId, Long imageId, Long memberId){
 
-        Member member=memberRepository.findById(memberId).get();
-        member.notExistMember();
+        // 업로더 존재 확인
+        Optional<Member> member=memberRepository.findById(memberId);
+        if(member.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
 
         Image image=imageRepository.findById(imageId);
-        image.notExistImage(); // 이미지 존재 확인
+        if(image==null){
+            throw new ImageNotFoundException();
+        }
 
         Folder folder=folderRepository.findById(folderId);
-        folder.notExistFolder(); // 폴더 존재 확인
+        // 폴더 존재 확인
+        if(folder==null){
+            throw new FolderNotFoundException();
+        }
 
         // 파일 북마크 등록 권한 확인 TODO: 코드 리팩토링 필요
-        if(folder.getMember().getId()!=null) folder.invalidUploader(member.getId()); // 개인 폴더 내 파일
-        else if(folder.getMember().getId()==null && folder.getTeam().getTeamIdx()!=null){ // 팀 폴더 내 파일
-            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.getId());
+        if(folder.getMember()!=null) folder.invalidUploader(member.get().getId()); // 개인 폴더 내 파일
+        else if(folder.getMember()==null && folder.getTeam()!=null){ // 팀 폴더 내 파일
+            TeamMember teamMember=teamMemberRepository.findTeamMemberByMemberTeamId(folder.getTeam().getTeamIdx(), member.get().getId());
             teamMember.notExistTeamMember();
         }
 
         Bookmark bookmark=new Bookmark();
         bookmark.setImage(image);
-        bookmark.setMember(member);
+        bookmark.setMember(member.get());
         bookmark.setCategory("image");
         bookmark.setAddedDate(LocalDateTime.now());
 
@@ -197,7 +225,9 @@ public class ImageService {
     @Transactional
     public PatchImageResponse modifyImage(Long imageId,PatchImageRequest patchImageReq){
         Image image=imageRepository.findById(imageId);
-        image.notExistImage(); // 이미지 존재 확인
+        if(image==null){
+            throw new ImageNotFoundException();
+        }
 
         Folder folder=folderRepository.findById(image.getFolder().getId());
 

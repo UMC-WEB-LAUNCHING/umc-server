@@ -13,6 +13,7 @@ public class GetLinksResponse {
     private String url;
     private String name;
     private String member_name; //uploader
+    private String uploaderProfile;
     private String folder_name;
 
     private Long bookmarkId;
@@ -28,7 +29,7 @@ public class GetLinksResponse {
         lastModifiedDate=link.getLastModifiedDate();
     }
 
-    public GetLinksResponse(Long linkId,String url, String name, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate){
+    public GetLinksResponse(Long linkId,String url, String name, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate,String uploaderProfile){
         this.linkId=linkId;
         this.url=url;
         this.name=name;
@@ -37,6 +38,7 @@ public class GetLinksResponse {
         this.bookmarkId=bookmarkId;
         this.uploadDate=uploadDate;
         this.lastModifiedDate=lastModifiedDate;
+        this.uploaderProfile=uploaderProfile;
     }
 
 }

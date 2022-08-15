@@ -40,7 +40,7 @@ public class LinkRepository {
 
     public List<GetLinksResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,bm.id,l.uploadDate,l.lastModifiedDate)"+
+                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,bm.id,l.uploadDate,l.lastModifiedDate,l.member.profileImage)"+
                                 " from Link l"+
                                 " join l.folder f"+
                                 " left join Bookmark bm"+
@@ -61,7 +61,16 @@ public class LinkRepository {
                 .setParameter("memberId",memberId)
                 .getResultList();
     }
-
+    public Long findDuplicateLinkName(Long folderId,String linkName){
+        return em.createQuery(
+                        "select count(l.name) from Link l"+
+                                " where l.name= :linkName"+
+                                " and l.folder.id= :folderId",Long.class)
+                .setParameter("linkName",linkName)
+                .setParameter("folderId",folderId)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
     public void remove(Link link){
         em.remove(link);
     }

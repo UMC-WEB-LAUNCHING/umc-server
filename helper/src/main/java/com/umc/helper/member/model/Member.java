@@ -25,6 +25,7 @@ public class Member {
     @Column(name="member_id")
     private Long id;
 
+    //@Column(unique = true)
     private String email;
 
     private String username;
@@ -52,10 +53,6 @@ public class Member {
     private List<Bookmark> bookmarks =new ArrayList<>();
 
     //==조회 로직==//
-    public void notExistMember(){
-        if(this==null) {
-            throw new MemberNotFoundException();
-        }
-    }
+
 
 }

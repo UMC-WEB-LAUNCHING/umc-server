@@ -12,6 +12,7 @@ public class GetFilesResponse implements Comparable<GetFilesResponse>{
     private String filePath;
     private String originalFileName;
     private String member_name; // uploader
+    private String uploaderProfile; // 프로필 사진
     private String folder_name;
     private Long folderId;
     private Long bookmarkId;
@@ -28,7 +29,7 @@ public class GetFilesResponse implements Comparable<GetFilesResponse>{
         lastModifiedDate=file.getLastModifiedDate();
     }
 
-    public GetFilesResponse(Long fileId,String filePath, String originalFileName, String member_name, String folderName, Long folderId,Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate,Long volume){
+    public GetFilesResponse(Long fileId,String filePath, String originalFileName, String member_name, String folderName, Long folderId,Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate,Long volume,String uploaderProfile){
         this.fileId=fileId;
         this.filePath=filePath;
         this.originalFileName=originalFileName;
@@ -39,6 +40,7 @@ public class GetFilesResponse implements Comparable<GetFilesResponse>{
         this.uploadDate=uploadDate;
         this.volume=volume;
         this.lastModifiedDate=lastModifiedDate;
+        this.uploaderProfile=uploaderProfile;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.umc.helper.folder;
 import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.bookmark.model.PostBookmarkResponse;
+import com.umc.helper.folder.exception.FolderNameDuplicateException;
 import com.umc.helper.folder.model.*;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.member.MemberRepository;
@@ -36,27 +37,36 @@ public class FolderService {
      */
     @Transactional
     public PostFolderResponse createFolder(PostFolderRequest postFolderReq){
+
         PostFolderResponse postFolderRes=new PostFolderResponse();
         String folder_case=postFolderReq.getFolder_case();
+
         Folder folder=new Folder();
-        folder.setCreatedDate(LocalDateTime.now());
+
         if(folder_case.equals("team")){
-            folder.setFolderName(postFolderReq.getFolder_name());
+            // 팀 내 동일 폴더 이름 확인
+            if(folderRepository.findDuplicateTeamFolderName(postFolderReq.getId(), postFolderReq.getFolder_name())==1){
+                throw new FolderNameDuplicateException();
+            }
             folder.setTeam(teamRepository.findById(postFolderReq.getId()));
-            folder.setCreatorId(postFolderReq.getCreatorId());
-            folder.setStatus(Boolean.TRUE);
-            folder.setLastModifiedDate(LocalDateTime.now());
             postFolderRes.setFolder_case("team");
         }
         else if(folder_case.equals("member")){
-            folder.setFolderName(postFolderReq.getFolder_name());
+            // 개인 동일 폴더 이름 확인
+            if(folderRepository.findDuplicateMemberFolderName(postFolderReq.getId(), postFolderReq.getFolder_name())==1){
+                throw new FolderNameDuplicateException();
+            }
             folder.setMember(memberRepository.findById(postFolderReq.getId()).get());
-            folder.setCreatorId(memberRepository.findById(postFolderReq.getId()).get().getId());
-            folder.setStatus(Boolean.TRUE);
-            folder.setLastModifiedDate(LocalDateTime.now());
             postFolderRes.setFolder_case("member");
         }
+
+        folder.setCreatedDate(LocalDateTime.now());
+        folder.setFolderName(postFolderReq.getFolder_name());
+        folder.setCreatorId(postFolderReq.getCreatorId());
+        folder.setStatus(Boolean.TRUE);
+        folder.setLastModifiedDate(folder.getCreatedDate());
         folderRepository.save(folder);
+
         postFolderRes.setFolderId(folderRepository.findById(folder.getId()).getId());
         postFolderRes.setFolder_name(folderRepository.findById(folder.getId()).getFolderName());
 

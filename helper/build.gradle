@@ -50,6 +50,8 @@ dependencies {
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
 	implementation 'org.springframework.boot:spring-boot-starter-websocket' // web socket
+	implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1' // stomp
+	implementation 'com.google.code.gson:gson:2.9.0' // gson
 
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' // aws 접근
 	implementation 'com.amazonaws:aws-java-sdk:1.11.404'

@@ -35,7 +35,7 @@ public class ImageRepository {
 
     public List<GetImagesResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.image.model.GetImagesResponse(i.id,i.filePath,i.originalFileName,i.member.username,f.folderName,bm.id,i.volume,i.uploadDate,i.lastModifiedDate)"+
+                        "select new com.umc.helper.image.model.GetImagesResponse(i.id,i.filePath,i.originalFileName,i.member.username,f.folderName,bm.id,i.volume,i.uploadDate,i.lastModifiedDate,i.member.profileImage)"+
                                 " from Image i"+
                                 " join i.folder f"+
                                 " left join Bookmark bm"+
@@ -57,6 +57,16 @@ public class ImageRepository {
                 .getResultList();
     }
 
+    public Long findDuplicateImageName(Long folderId,String fileName){
+        return em.createQuery(
+                        "select count(i.fileName) from Image i"+
+                                " where i.fileName= :fileName"+
+                                " and i.folder.id= :folderId",Long.class)
+                .setParameter("fileName",fileName)
+                .setParameter("folderId",folderId)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
     public void remove(Image image){
         em.remove(image);
     }

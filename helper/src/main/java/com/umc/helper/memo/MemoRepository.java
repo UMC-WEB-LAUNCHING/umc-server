@@ -37,9 +37,19 @@ public class MemoRepository {
                 .getResultList();
     }
 
+    public Long findDuplicateMemoName(Long folderId,String memoName){
+        return em.createQuery(
+                        "select count(m.name) from Memo m"+
+                                " where m.name= :memoName"+
+                                " and m.folder.id= :folderId",Long.class)
+                .setParameter("memoName",memoName)
+                .setParameter("folderId",folderId)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
     public List<GetMemosResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,bm.id,m.uploadDate,m.lastModifiedDate)"+
+                "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,bm.id,m.uploadDate,m.lastModifiedDate,m.member.profileImage)"+
                         " from Memo m"+
                         " join m.folder f"+
                         " left join Bookmark bm"+

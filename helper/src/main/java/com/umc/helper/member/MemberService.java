@@ -10,6 +10,9 @@ import com.umc.helper.auth.TokenResponse;
 import com.umc.helper.auth.TokenUtils;
 import com.umc.helper.auth2.JwtTokenProvider;
 import com.umc.helper.auth2.exception.RefreshTokenNotFound;
+import com.umc.helper.member.exception.EmailDuplicateException;
+import com.umc.helper.member.exception.MemberEmailException;
+import com.umc.helper.member.exception.MemberPasswordException;
 import com.umc.helper.member.model.*;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +52,19 @@ public class MemberService {
     // 회원 가입
     @Transactional
     public PostMemberResponse createMember(PostMemberRequest postMemberReq){
+
+        // 이메일 입력 여부 확인
+        postMemberReq.isPresentEmail();
+        // 이름 입력 여부 확인
+        postMemberReq.isPresentName();
+        // 비밀번호 입력 여부 확인
+        postMemberReq.isPresentPassword();
+
+        // 이메일 중복 확인
+        if(memberRepository.findByEmail(postMemberReq.getEmail()).isPresent()){
+            throw new EmailDuplicateException();
+        }
+
         postMemberReq.setPassword(passwordEncoder.encode(postMemberReq.getPassword()));
         Member member=new Member();
         member.setPassword(postMemberReq.getPassword());
@@ -57,8 +73,11 @@ public class MemberService {
         member.setRegisterDateTime(LocalDateTime.now());
         memberRepository.save(member);
 
-        String accessToken=jwtTokenProvider.createAccessToken(member.getEmail());
-        String refreshToken=jwtTokenProvider.createRefreshToken(member.getEmail());
+//        String accessToken=jwtTokenProvider.createAccessToken(member.getEmail());
+//        String refreshToken=jwtTokenProvider.createRefreshToken(member.getEmail());
+
+        String accessToken=null;
+        String refreshToken=null;
 
         Token token=new Token();
         token.setMember(member);
@@ -72,62 +91,64 @@ public class MemberService {
         return postMemberRes;
     }
 
-//    // 로그인
+    // 로그인 - jwt 적용 X
+   @Transactional
+    public TokenResponse signIn(PostLoginRequest postLoginReq){
+        Optional<Member> member=memberRepository.findByEmail(postLoginReq.getEmail());
+
+        // 이메일 확인 - 존재하지 않는 이메일
+        if(member.isEmpty()){
+            throw new MemberEmailException();
+        }
+        // 비밀번호 확인 - 비밀번호 불일치
+        if (!passwordEncoder.matches(postLoginReq.getPassword(), member.get().getPassword())) {
+            throw new MemberPasswordException();
+        }
+
+        member.get().setLastLoginDatetime(LocalDateTime.now());
+        return TokenResponse.builder()
+                .ACCESS_TOKEN(null)
+                .REFRESH_TOKEN(null)
+                .memberId(member.get().getId())
+                .memberName(member.get().getUsername())
+                .build();
+
+    }
+
+    // 로그인 - jwt 적용
 //    @Transactional
-//    public TokenResponse signIn(PostLoginRequest postLoginReq){
+//    public TokenResponse signIn(PostLoginRequest postLoginReq) throws Exception{
 //        Member member=memberRepository.findByEmail(postLoginReq.getEmail()).get();
 //        Token token=tokenRepository.findByMemberId(member.getId()).get();
+//        logger.info("signIn- refresh token: {}",token.getRefreshToken());
+//
+//        if (!passwordEncoder.matches(postLoginReq.getPassword(), member.getPassword())) {
+//            throw new Exception("비밀번호가 일치하지 않습니다.");
+//        }
 //
 //        String accessToken="";
 //        String refreshToken=token.getRefreshToken();
 //
-//        if (tokenUtils.isValidRefreshToken(refreshToken)) {
-//            accessToken = tokenUtils.generateJwtToken(token.getMember());
-//           TokenResponse tokenResponse=new TokenResponse(accessToken,token.getRefreshToken());
-//
-//           return tokenResponse;
+//        if (jwtTokenProvider.isValidRefreshToken(refreshToken)) {
+//            accessToken = jwtTokenProvider.createAccessToken(member.getEmail()); //Access Token 새로 만들어서 줌
+//            logger.info(">MemberService: isValidRefreshToken");
+//            return TokenResponse.builder()
+//                    .ACCESS_TOKEN(accessToken)
+//                    .REFRESH_TOKEN(refreshToken)
+//                    .build();
 //        } else {
-//            refreshToken = tokenUtils.saveRefreshToken(member);
-//            token.setRefreshToken(refreshToken);
+//            //둘 다 새로 발급
+//            logger.info(">MemberService: 둘 다 새로 발급");
+//            accessToken = jwtTokenProvider.createAccessToken(member.getEmail());
+//            refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
+//            token.setRefreshToken(refreshToken);   //DB Refresh 토큰 갱신
 //        }
-//        member.setLastLoginDatetime(LocalDateTime.now());
-//        return new TokenResponse(accessToken,refreshToken);
+//
+//        return TokenResponse.builder()
+//                .ACCESS_TOKEN(accessToken)
+//                .REFRESH_TOKEN(refreshToken)
+//                .build();
 //    }
-
-    // 로그인
-    @Transactional
-    public TokenResponse signIn(PostLoginRequest postLoginReq) throws Exception{
-        Member member=memberRepository.findByEmail(postLoginReq.getEmail()).get();
-        Token token=tokenRepository.findByMemberId(member.getId()).get();
-        logger.info("signIn- refresh token: {}",token.getRefreshToken());
-
-        if (!passwordEncoder.matches(postLoginReq.getPassword(), member.getPassword())) {
-            throw new Exception("비밀번호가 일치하지 않습니다.");
-        }
-
-        String accessToken="";
-        String refreshToken=token.getRefreshToken();
-
-        if (jwtTokenProvider.isValidRefreshToken(refreshToken)) {
-            accessToken = jwtTokenProvider.createAccessToken(member.getEmail()); //Access Token 새로 만들어서 줌
-            logger.info(">MemberService: isValidRefreshToken");
-            return TokenResponse.builder()
-                    .ACCESS_TOKEN(accessToken)
-                    .REFRESH_TOKEN(refreshToken)
-                    .build();
-        } else {
-            //둘 다 새로 발급
-            logger.info(">MemberService: 둘 다 새로 발급");
-            accessToken = jwtTokenProvider.createAccessToken(member.getEmail());
-            refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
-            token.setRefreshToken(refreshToken);   //DB Refresh 토큰 갱신
-        }
-
-        return TokenResponse.builder()
-                .ACCESS_TOKEN(accessToken)
-                .REFRESH_TOKEN(refreshToken)
-                .build();
-    }
 
     // refresh token으로 access token 재발급
     public TokenResponse issueAccessToken(HttpServletRequest request){
@@ -144,7 +165,7 @@ public class MemberService {
                 Claims claimsToken = jwtTokenProvider.getClaimsToken(refreshToken);
                 String email = (String)claimsToken.get("email");
                 Optional<Member> member = memberRepository.findByEmail(email);
-                String tokenFromDB = tokenRepository.findByMemberId(member.get().getId()).get().getRefreshToken();
+                String tokenFromDB = tokenRepository.findByMemberId(member.get().getId()).getRefreshToken();
                 logger.info("refresh token from DB: {}",tokenFromDB);
                 if(refreshToken.equals(tokenFromDB)) {   //DB의 refresh토큰과 지금들어온 토큰이 같은지 확인
                     logger.info("reissue access token");
@@ -174,13 +195,14 @@ public class MemberService {
     @Transactional
     public GetFindPasswordResponse findPassword(String email){
         Optional<Member> member=memberRepository.findByEmail(email);
-        GetFindPasswordResponse result;
+
+        // 이메일 존재 확인
         if(member.isEmpty()){
-            result=new GetFindPasswordResponse("이메일 오류"); //TODO: 예외처리로 변경 필요
+            throw new MemberEmailException();
         }
-        else{
-            result=new GetFindPasswordResponse(member.get().getEmail());
-        }
+
+        GetFindPasswordResponse result=new GetFindPasswordResponse(member.get().getEmail());
+
         return result;
 
     }
@@ -252,5 +274,13 @@ public class MemberService {
 
         return new PatchMemberInfoResponse(member.getId(),member.getUsername(),member.getEmail(),member.getProfileImage());
 
+    }
+
+    // 로그아웃
+    @Transactional
+    public int logout(Long memberId){
+        int count=tokenRepository.removeTokenByMemberId(memberId);
+
+        return count;
     }
 }

@@ -29,26 +29,36 @@ public enum BaseResponseStatus {
     // 회원가입
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
-    POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
+    POST_USERS_EMPTY_PASSWORD(false, 2017, "비밀번호를 입력해주세요."),
+    POST_USERS_EMPTY_NAME(false, 2018, "이름을 입력해주세요."),
+
+
+    POST_USERS_EXISTS_EMAIL(false,2019,"중복된 이메일입니다."),
 
     // folder
     FOLDER_EMPTY(false,2020,"존재하지 않는 폴더입니다"),
     INVALID_UPLOADER(false,2021,"폴더에 접근 권한이 없는 유저입니다."),
+    EXIST_FOLDER_NAME(false,2022,"중복된 폴더 이름입니다."),
     // file
     FILE_EMPTY(false,2025,"존재하지 않는 파일입니다."),
+    EXIST_FILE_NAME(false,2026,"중복된 파일 이름입니다."),
 
     // team member
     TEAM_MEMBER_EMPTY(false,2030,"존재하지 않는 팀원입니다."),
 
     // image
     IMAGE_EMPTY(false,2033,"존재하지 않는 이미지입니다."),
+    EXIST_IMAGE_NAME(false,2034,"중복된 이미지 이름입니다."),
 
     // link
     LINK_EMPTY(false,2036,"존재하지 않는 링크입니다."),
+    EXIST_LINK_NAME(false,2037,"중복된 링크 이름입니다."),
 
     // memo
     MEMO_EMPTY(false,2040,"존재하지 않는 메모입니다."),
     MEMO_SIZE_EXCEED(false,2041,"글자 수 500자를 초과했습니다."),
+    EXIST_MEMO_NAME(false,2042,"중복된 메모 이름입니다."),
+
     // team
     INVALID_DELETE_TEAM(false,2044,"팀을 삭제할 수 없는 유저입니다."),
     TEAM_EMPTY(false,2045,"존재하지 않는 팀입니다."),

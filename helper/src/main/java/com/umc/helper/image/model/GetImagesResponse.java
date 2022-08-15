@@ -16,9 +16,11 @@ public class GetImagesResponse {
     private String filePath;
     private String originalFileName;
     private String member_name; // uploader
+    private String uploaderImage;
     private String folder_name;
 
     private Long bookmarkId;
+    private Long volume;
     private LocalDateTime uploadDate;
     private LocalDateTime lastModifiedDate;
 
@@ -31,14 +33,16 @@ public class GetImagesResponse {
         lastModifiedDate=image.getLastModifiedDate();
     }
 
-    public GetImagesResponse(Long imageId,String filePath, String originalFileName, String member_name, String folderName, Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate){
+    public GetImagesResponse(Long imageId,String filePath, String originalFileName, String member_name, String folderName, Long bookmarkId,Long volume,LocalDateTime uploadDate,LocalDateTime lastModifiedDate,String uploaderImage){
         this.imageId=imageId;
         this.filePath=filePath;
         this.originalFileName=originalFileName;
         this.member_name=member_name;
         this.folder_name=folderName;
         this.bookmarkId=bookmarkId;
+        this.volume=volume;
         this.uploadDate=uploadDate;
         this.lastModifiedDate=lastModifiedDate;
+        this.uploaderImage=uploaderImage;
     }
 }

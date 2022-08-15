@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,6 +47,27 @@ public class FolderRepository {
                 .getResultList();
     }
 
+    public Long findDuplicateTeamFolderName(Long teamId,String folderName){
+        return em.createQuery(
+                "select count(f.folderName) from Folder f"+
+                        " where f.folderName= :folderName"+
+                        " and f.team.teamIdx= :teamId",Long.class)
+                .setParameter("folderName",folderName)
+                .setParameter("teamId",teamId)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
+    public Long findDuplicateMemberFolderName(Long memberId,String folderName){
+        return em.createQuery(
+                        "select count(f.folderName) from Folder f"+
+                                " where f.folderName= :folderName"+
+                                " and f.member.id= :memberId",Long.class)
+                .setParameter("folderName",folderName)
+                .setParameter("memberId",memberId)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
+
     public void remove(Folder folder){
         em.remove(folder);
     }
@@ -78,7 +100,6 @@ public class FolderRepository {
                 .setParameter("teamId",teamId)
                 .executeUpdate();
     }
-
 
 
 }
