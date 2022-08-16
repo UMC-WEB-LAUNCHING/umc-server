@@ -64,12 +64,18 @@ public class TeamService {
         Team team=new Team();
         team.setName(postTeamReq.getTeamName());
 
-        Member creator=memberRepository.findById(postTeamReq.getCreatorId()).get();
+        Optional<Member> creator=memberRepository.findById(postTeamReq.getCreatorId());
+        if(creator.isEmpty()){
+            throw new MemberNotFoundException();
+        }
 
         List<TeamMember> members=new ArrayList<>();
         List<String> memberNames=new ArrayList<>();
 
         for(PostTeamRequest member: postTeamReq.getMembers()){
+            if(memberRepository.findByEmail(member.getMemberEmail()).isEmpty()){
+                throw new MemberNotFoundException();
+            }
             TeamMember teamMember=new TeamMember();
             teamMember.setMember(memberRepository.findByEmail(member.getMemberEmail()).get());
             teamMember.setTeam(team);
@@ -79,7 +85,7 @@ public class TeamService {
         }
         team.setMembers(members);
         team.setCreatedDate(LocalDateTime.now());
-        team.setCreator(creator);
+        team.setCreator(creator.get());
 
         teamRepository.save(team);
 
@@ -94,6 +100,7 @@ public class TeamService {
     @Transactional
     public GetTeamsResponse retrieveTeams(Long memberId){
         //TODO: query 리팩토링 하면 코드 바꿀 수 있을듯
+        //TODO: 예외처리
         String memberName=memberRepository.findById(memberId).get().getUsername();
         List<TeamMember> teams= teamMemberRepository.findTeamMemberByMemberId(memberId); // memberid:3 - team_id: 4,5,20
         List<TeamInfo> teamInfoList = new ArrayList<>();
@@ -118,12 +125,17 @@ public class TeamService {
      */
     @Transactional
     public PostTeamInvitationResponse inviteTeamMembers(PostTeamInvitationRequest postTeamInvitationReq){
-
+        if(teamRepository.findById(postTeamInvitationReq.getTeamId())==null){
+            throw new TeamNotFoundException();
+        }
         Team team=teamRepository.findById(postTeamInvitationReq.getTeamId());
         List<String> invitedMembers=postTeamInvitationReq.getMemberEmail();
 
         if(team!=null){
             for(String invitedMember: invitedMembers){
+                if(memberRepository.findByEmail(invitedMember).isEmpty()){
+                    throw new MemberNotFoundException();
+                }
                 Member member=memberRepository.findByEmail(invitedMember).get();
                 TeamMember teamMember=new TeamMember();
                 teamMember.setTeam(team);

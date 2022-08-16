@@ -32,11 +32,11 @@ public class Link {
     private Boolean status; // false - 쓰레기통에 들어감
     private LocalDateTime statusModifiedDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="folder_id")
     private Folder folder;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="member_id")
     private Member member; // uploader
 

@@ -60,7 +60,19 @@ public class MemoRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
-
+    public List<GetMemosResponse> findAllInfoByFolderIds(List<Long> folderIds){
+        return em.createQuery(
+                        "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,bm.id,m.uploadDate,m.lastModifiedDate,m.member.profileImage)"+
+                                " from Memo m"+
+                                " join m.folder f"+
+                                " left join Bookmark bm"+
+                                " on m.id=bm.memo.id"+
+                                " where f.id in (:folderIds)"+
+                                " and m.status= :status",GetMemosResponse.class)
+                .setParameter("folderIds",folderIds)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
+    }
     public List<Memo> findTrashByMemberId(Long memberId){
         return em.createQuery(
                 "select m from Memo m"+

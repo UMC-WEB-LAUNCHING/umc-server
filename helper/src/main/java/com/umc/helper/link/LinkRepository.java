@@ -51,6 +51,19 @@ public class LinkRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
+    public List<GetLinksResponse> findAllInfoByFolderIds(List<Long> folderIds){
+        return em.createQuery(
+                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,bm.id,l.uploadDate,l.lastModifiedDate,l.member.profileImage)"+
+                                " from Link l"+
+                                " join l.folder f"+
+                                " left join Bookmark bm"+
+                                " on l.id=bm.link.id"+
+                                " where f.id in (:folderIds)"+
+                                " and l.status= :status",GetLinksResponse.class)
+                .setParameter("folderIds",folderIds)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
+    }
 
     public List<Link> findTrashByMemberId(Long memberId){
         return em.createQuery(

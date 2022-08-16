@@ -28,7 +28,15 @@ public class FolderRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
-
+    public List<Folder> findAllByTeamIds(List<Long> teamIds){
+        return em.createQuery(
+                        "select f from Folder f"+
+                                " where f.team.teamIdx in (:teamIds)"+
+                                " and f.status= :status", Folder.class)
+                .setParameter("teamIds",teamIds)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
+    }
     public List<Folder> findEveryByTeamId(Long teamId){
         return em.createQuery(
                         "select f from Folder f"+

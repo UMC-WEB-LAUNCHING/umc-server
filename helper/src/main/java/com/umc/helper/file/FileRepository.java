@@ -2,12 +2,14 @@ package com.umc.helper.file;
 
 import com.umc.helper.file.model.File;
 import com.umc.helper.file.model.GetFilesResponse;
+import com.umc.helper.folder.model.Folder;
 import com.umc.helper.memo.model.GetMemosResponse;
 import com.umc.helper.memo.model.Memo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StopWatch;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -19,7 +21,6 @@ import java.util.Optional;
 public class FileRepository {
 
     private final EntityManager em;
-
     public void save(File file){em.persist(file);}
 
     public File findById(Long fileId){ return em.find(File.class,fileId);}
@@ -48,6 +49,24 @@ public class FileRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
+    public List<GetFilesResponse> findAllInfoByFolderIds(List<Long> folderIds){
+        return em.createQuery(
+                        "select new com.umc.helper.file.model.GetFilesResponse(f.id,f.filePath,f.originalFileName,f.member.username,ff.folderName,ff.id,bm.id,f.uploadDate,f.lastModifiedDate,f.volume,f.member.profileImage)"+
+                                " from File f"+
+                                " join f.folder ff"+
+                                " left join Bookmark bm"+
+                                " on f.id=bm.file.id"+
+                                " where ff.id in (:folderIds)"+
+                                " and f.status= :status",GetFilesResponse.class)
+                .setParameter("folderIds",folderIds)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
+    }
+//    public List<File> findAllInfoByFolderId2(Long folderId){
+//        return em.createQuery(
+//                "select f"
+//        )
+//    }
     public Long findDuplicateFileName(Long folderId,String fileName){
         return em.createQuery(
                         "select count(f.fileName) from File f"+

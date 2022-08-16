@@ -2,6 +2,7 @@ package com.umc.helper.image;
 
 import com.umc.helper.bookmark.model.Bookmark;
 import com.umc.helper.file.model.File;
+import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.image.model.GetImagesResponse;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.model.Link;
@@ -46,7 +47,19 @@ public class ImageRepository {
                 .setParameter("status",Boolean.TRUE)
                 .getResultList();
     }
-
+    public List<GetImagesResponse> findAllInfoByFolderIds(List<Long> folderIds){
+        return em.createQuery(
+                        "select new com.umc.helper.image.model.GetImagesResponse(i.id,i.filePath,i.originalFileName,i.member.username,f.folderName,bm.id,i.volume,i.uploadDate,i.lastModifiedDate,i.member.profileImage)"+
+                                " from Image i"+
+                                " join i.folder f"+
+                                " left join Bookmark bm"+
+                                " on i.id=bm.image.id"+
+                                " where f.id in (:folderIds)"+
+                                " and i.status= :status",GetImagesResponse.class)
+                .setParameter("folderIds",folderIds)
+                .setParameter("status",Boolean.TRUE)
+                .getResultList();
+    }
     public List<Image> findTrashByMemberId(Long memberId){
         return em.createQuery(
                         "select i from Image i"+

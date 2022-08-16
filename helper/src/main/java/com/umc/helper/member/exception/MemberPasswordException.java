@@ -1,0 +1,9 @@
+package com.umc.helper.member.exception;
+
+import com.umc.helper.config.BaseResponseStatus;
+import com.umc.helper.exception.BusinessException;
+
+public class MemberPasswordException extends BusinessException {
+    public MemberPasswordException(){super(BaseResponseStatus.USERS_EMPTY_USER_PASSWORD);}
+
+}

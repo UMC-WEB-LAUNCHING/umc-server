@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.umc.helper.file.exception.FileNotFoundException;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +47,7 @@ public class FileService {
     private final TeamMemberRepository teamMemberRepository;
     private final AmazonS3Client amazonS3Client;
     Logger log= LoggerFactory.getLogger(FileService.class);
+    StopWatch stopWatch = new StopWatch();
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -75,9 +77,12 @@ public class FileService {
         if(folder==null){
             throw new FolderNotFoundException();
         }
-
+        stopWatch.start("retrieve direct dto");
         List<GetFilesResponse> result=fileRepository.findAllInfoByFolderId(folderId);
+        stopWatch.stop();
 
+
+        log.info("query execution time: {}",stopWatch.prettyPrint());
         return result;
     }
 

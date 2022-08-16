@@ -4,10 +4,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.umc.helper.auth.Token;
-import com.umc.helper.auth.TokenRepository;
-import com.umc.helper.auth.TokenResponse;
-import com.umc.helper.auth.TokenUtils;
+import com.umc.helper.auth2.Token;
+import com.umc.helper.auth2.TokenRepository;
+import com.umc.helper.auth2.TokenResponse;
 import com.umc.helper.auth2.JwtTokenProvider;
 import com.umc.helper.auth2.exception.RefreshTokenNotFound;
 import com.umc.helper.member.exception.EmailDuplicateException;
@@ -20,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,6 @@ import java.util.UUID;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final TokenRepository tokenRepository;
-    private final TokenUtils tokenUtils;
     private final PasswordEncoder passwordEncoder;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -48,6 +48,7 @@ public class MemberService {
     private String bucket;
 
     Logger logger= LoggerFactory.getLogger(MemberService.class);
+
 
     // 회원 가입
     @Transactional
