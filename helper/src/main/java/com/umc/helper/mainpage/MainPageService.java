@@ -173,11 +173,13 @@ public class MainPageService {
 
     //TODO: 성능 개선
     public GetMainPageResponse getMainPage(Long memberId){
+
         // 팀 목록
         GetTeamsResponse mainPageTeams=teamService.retrieveTeams(memberId); // 팀 목록
         List<TeamMember> teamMembers=teamMemberRepository.findTeamMemberByMemberId(memberId);
         Member member=memberRepository.findById(memberId).get();
 
+        // 내 폴더
         List<Folder> myFolders=folderRepository.findAllByMemberId(member.getId()); // my folders
         List<Long> myFolderIds=myFolders.stream() // 내 폴더 ids
                 .map(myFolder->myFolder.getId())
@@ -185,7 +187,6 @@ public class MainPageService {
         List<GetFoldersResponse> mainPageMyFolders=myFolders.stream()
                 .map(mf->new GetFoldersResponse(mf))
                 .collect(Collectors.toList()); // 내 폴더들
-        logger.info("mainPageMyFolders size: {}",mainPageMyFolders.size());
 
         // 팀 폴더
         List<Long> teamIds=teamMembers.stream() // 팀 ids
@@ -198,7 +199,6 @@ public class MainPageService {
         List<Long> teamFolderIds=teamFolders.stream() // 팀 폴더 ids
                         .map(teamFolder->teamFolder.getId())
                                 .collect(Collectors.toList());
-        logger.info("mainPageTeamFolders size: {}",mainPageTeamFolders.size());
 
         // 전체 폴더
         List<GetFoldersResponse> allFolders=new ArrayList<>();
@@ -212,60 +212,51 @@ public class MainPageService {
         for(GetFilesResponse teamFile:teamFiles){
             logger.info("teamFile lastModifiedDate");
             items.add(new GetItemResponse(teamFile.getLastModifiedDate(),"file",teamFile,null,null,null));
-            //allFiles.add(teamFile);
         }
         List<GetImagesResponse> teamImages=imageRepository.findAllInfoByFolderIds(teamFolderIds);
         for(GetImagesResponse teamImage:teamImages){
             items.add(new GetItemResponse(teamImage.getLastModifiedDate(),"image",null,null,null,teamImage));
-            //allFiles.add(teamFile);
         }
         List<GetMemosResponse>teamMemos=memoRepository.findAllInfoByFolderIds(teamFolderIds);
         for(GetMemosResponse teamMemo:teamMemos){
             items.add(new GetItemResponse(teamMemo.getLastModifiedDate(),"memo",null,null,teamMemo,null));
-            //allFiles.add(teamFile);
         }
         List<GetLinksResponse> teamLinks=linkRepository.findAllInfoByFolderIds(teamFolderIds);
         for(GetLinksResponse teamLink:teamLinks){
             items.add(new GetItemResponse(teamLink.getLastModifiedDate(),"link",null,teamLink,null,null));
-            //allFiles.add(teamFile);
         }
-        logger.info("teamFiles size: {}",teamFiles.size());
 
         List<GetFilesResponse> myFiles=fileRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetFilesResponse myFile:myFiles){
             items.add(new GetItemResponse(myFile.getLastModifiedDate(),"file",myFile,null,null,null));
-            //allFiles.add(myFile);
         }
         List<GetImagesResponse> myImages=imageRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetImagesResponse myImage:myImages){
             items.add(new GetItemResponse(myImage.getLastModifiedDate(),"image",null,null,null,myImage));
-            //allFiles.add(teamFile);
         }
         List<GetMemosResponse> myMemos=memoRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetMemosResponse myMemo:myMemos){
             items.add(new GetItemResponse(myMemo.getLastModifiedDate(),"memo",null,null,myMemo,null));
-            //allFiles.add(teamFile);
         }
         List<GetLinksResponse> myLinks=linkRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetLinksResponse myLink:myLinks){
             items.add(new GetItemResponse(myLink.getLastModifiedDate(),"link",null,myLink,null,null));
-            //allFiles.add(teamFile);
         }
+
+        logger.info("teamFiles size: {}",teamFiles.size());
         logger.info("myFiles size: {}",myFiles.size());
-
-
-        //logger.info("allFiles size:{}",allFiles.size());
         logger.info("allFolders size:{}",allFolders.size());
+        logger.info("mainPageTeamFolders size: {}",mainPageTeamFolders.size());
+        logger.info("mainPageMyFolders size: {}",mainPageMyFolders.size());
 
 
         Collections.sort(mainPageMyFolders);
         Collections.sort(mainPageTeamFolders);
-        //Collections.sort(allFiles);
         Collections.sort(items);
         Collections.sort(allFolders);
 
-        GetMainPageResponse getMainPageResponse=new GetMainPageResponse(mainPageTeams,mainPageMyFolders,mainPageTeamFolders,allFolders,items,memberId,member.getUsername());
-
+        //GetMainPageResponse getMainPageResponse=new GetMainPageResponse(mainPageTeams,mainPageMyFolders,mainPageTeamFolders,allFolders,items,memberId,member.getUsername());
+        GetMainPageResponse getMainPageResponse=new GetMainPageResponse(items,memberId,member.getUsername());
         return getMainPageResponse;
 
     }

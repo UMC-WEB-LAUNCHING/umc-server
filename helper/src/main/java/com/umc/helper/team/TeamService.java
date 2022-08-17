@@ -212,6 +212,7 @@ public class TeamService {
     }
 
     // 팀 프로필 사진 변경
+    //TODO: 팀 생성자만 수정할 수 있게 할 것인지, 모든 팀원이 수정가능할지
     @Transactional
     public PatchTeamInfoResponse editProfile(Long teamId, MultipartFile profile){
         Team team=teamRepository.findById(teamId);
@@ -249,6 +250,7 @@ public class TeamService {
     }
 
     //  팀 이름 수정
+    //TODO: 팀 생성자만 수정할 수 있게 할 것인지, 모든 팀원이 수정가능할지
     @Transactional
     public PatchTeamInfoResponse editName(Long teamId, PatchTeamNameRequest patchTeamNameReq){
         Team team=teamRepository.findById(teamId);
@@ -256,6 +258,24 @@ public class TeamService {
         team.setName(patchTeamNameReq.getName());
 
         return new PatchTeamInfoResponse(team.getTeamIdx(),team.getName(),team.getProfileImage());
+
+    }
+
+    // 팀 정보 조회
+    @Transactional
+    public GetTeamInfoResponse getTeamInfo(Long teamId){
+        Team team=teamRepository.findById(teamId);
+        List<TeamMember> teamMembers=teamMemberRepository.findTeamMembersByTeamId(teamId);
+
+        List<TeamMemberInfo> teamMemberInfos=new ArrayList<>();
+        for(TeamMember teamMember:teamMembers){
+            Member member=memberRepository.findById(teamMember.getMember().getId()).get();
+            teamMemberInfos.add(new TeamMemberInfo(member.getId(),member.getUsername(),member.getEmail()));
+        }
+
+        Member creator=memberRepository.findById(team.getCreator().getId()).get();
+
+        return new GetTeamInfoResponse(team.getProfileImage(),team.getName(),team.getTeamIdx(),creator.getId(),creator.getUsername(),teamMemberInfos);
 
     }
 }

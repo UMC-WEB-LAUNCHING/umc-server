@@ -112,6 +112,7 @@ public class MemberService {
                 .REFRESH_TOKEN(null)
                 .memberId(member.get().getId())
                 .memberName(member.get().getUsername())
+                .profile(member.get().getProfileImage())
                 .build();
 
     }

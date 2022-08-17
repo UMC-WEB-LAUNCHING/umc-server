@@ -35,7 +35,7 @@ public class Team {
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="member_id")
-    private Member creator;
+    private Member creator; // 팀 생성한 사람(팀장)
 
     private Boolean status;
 

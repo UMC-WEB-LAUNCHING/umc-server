@@ -92,4 +92,12 @@ public class TeamController {
 
         return new BaseResponse<>(patchTeamInfoRes);
     }
+
+    // 팀 정보 조회
+    @GetMapping("team/info/{teamId}")
+    public BaseResponse<GetTeamInfoResponse> getTeamInfo(@PathVariable("teamId") Long teamId){
+        GetTeamInfoResponse getTeamInfoRes=teamService.getTeamInfo(teamId);
+
+        return new BaseResponse<>(getTeamInfoRes);
+    }
 }
