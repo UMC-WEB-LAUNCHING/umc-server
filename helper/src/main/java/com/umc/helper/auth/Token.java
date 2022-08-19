@@ -1,4 +1,4 @@
-package com.umc.helper.auth2;
+package com.umc.helper.auth;
 
 import com.umc.helper.member.model.Member;
 import lombok.Getter;

@@ -33,11 +33,11 @@ public class File {
     private LocalDateTime uploadDate;
     private LocalDateTime lastModifiedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="folder_id")
     private Folder folder;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="member_id")
     private Member member; // uploader
 

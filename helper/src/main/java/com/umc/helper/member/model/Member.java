@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Data
-@Builder
+//@Builder
 @NoArgsConstructor @AllArgsConstructor
 public class Member {
 
@@ -54,5 +54,11 @@ public class Member {
 
     //==조회 로직==//
 
+    public Member(String id, String email, String name, String provider,LocalDateTime registerDateTime){
+        this.email=email;
+        this.username=name;
+        this.provider=provider;
+        this.registerDateTime=registerDateTime;
+    }
 
 }

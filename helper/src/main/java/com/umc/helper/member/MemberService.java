@@ -4,11 +4,14 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.umc.helper.auth2.Token;
-import com.umc.helper.auth2.TokenRepository;
-import com.umc.helper.auth2.TokenResponse;
-import com.umc.helper.auth2.JwtTokenProvider;
-import com.umc.helper.auth2.exception.RefreshTokenNotFound;
+import com.umc.helper.auth.Token;
+import com.umc.helper.auth.TokenRepository;
+import com.umc.helper.auth.TokenResponse;
+import com.umc.helper.auth.JwtTokenProvider;
+import com.umc.helper.auth.exception.RefreshTokenNotFound;
+import com.umc.helper.auth.oauth.GoogleOauth;
+import com.umc.helper.auth.oauth.GoogleUser;
+import com.umc.helper.auth.oauth.OAuthToken;
 import com.umc.helper.member.exception.EmailDuplicateException;
 import com.umc.helper.member.exception.MemberEmailException;
 import com.umc.helper.member.exception.MemberPasswordException;
@@ -19,8 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +43,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final GoogleOauth googleOauthService;
 
     private final AmazonS3Client amazonS3Client;
 
@@ -121,7 +124,7 @@ public class MemberService {
 //    @Transactional
 //    public TokenResponse signIn(PostLoginRequest postLoginReq) throws Exception{
 //        Member member=memberRepository.findByEmail(postLoginReq.getEmail()).get();
-//        Token token=tokenRepository.findByMemberId(member.getId()).get();
+//        Token token=tokenRepository.findByMemberId(member.getId());
 //        logger.info("signIn- refresh token: {}",token.getRefreshToken());
 //
 //        if (!passwordEncoder.matches(postLoginReq.getPassword(), member.getPassword())) {
@@ -191,7 +194,6 @@ public class MemberService {
                 .REFRESH_TOKEN(refreshToken)
                 .build();
     }
-    // TODO: 소셜 로그인
 
     // 비밀번호 재설정 위해 이메일 찾기
     @Transactional
@@ -284,5 +286,52 @@ public class MemberService {
         int count=tokenRepository.removeTokenByMemberId(memberId);
 
         return count;
+    }
+
+    // 소셜 로그인
+    public TokenResponse oauthLogin(String code)  {
+        ResponseEntity<String> accessTokenResponse = googleOauthService.requestAccessToken(code);
+        OAuthToken oAuthToken = googleOauthService.getAccessToken(accessTokenResponse);
+        logger.info("Access Token: {}", oAuthToken.getAccessToken());
+
+        ResponseEntity<String> userInfoResponse = googleOauthService.createGetRequest(oAuthToken);
+        logger.info("userInfoResponse: {}",userInfoResponse);
+        GoogleUser googleUser = googleOauthService.getUserInfo(userInfoResponse);
+        logger.info("Google User Name: {}", googleUser.getName());
+        logger.info("Google User Email: {}", googleUser.getEmail());
+
+        String jwtAccessToken=jwtTokenProvider.createAccessToken(googleUser.getEmail());
+        String jwtRefreshToken=jwtTokenProvider.createRefreshToken(googleUser.getEmail());
+
+        if (!isJoinedUser(googleUser)) {
+            signUp(googleUser, jwtRefreshToken);
+        }
+
+        Member member = memberRepository.findByEmail(googleUser.getEmail()).orElseThrow(IllegalArgumentException::new);
+        member.setLastLoginDatetime(LocalDateTime.now());
+
+        //logger.info("accessToken:{}",jwtAccessToken);
+        TokenResponse tokenResponse=new TokenResponse(jwtAccessToken,jwtRefreshToken,member.getId(),member.getUsername(),member.getProfileImage());
+
+        return tokenResponse;
+    }
+
+    private boolean isJoinedUser(GoogleUser googleUser) {
+        Optional<Member> member = memberRepository.findByEmail(googleUser.getEmail());
+        logger.info("Joined User: {}", member);
+        return member.isPresent();
+    }
+
+    private void signUp(GoogleUser googleUser, String refreshToken) {
+
+        Member member = googleUser.toUserSignUp();
+        memberRepository.save(member);
+
+        Token token=new Token();
+        token.setMember(member);
+        token.setRefreshToken(refreshToken);
+        tokenRepository.save(token);
+
+
     }
 }

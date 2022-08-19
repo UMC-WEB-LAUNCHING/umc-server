@@ -1,6 +1,5 @@
-package com.umc.helper.auth2;
+package com.umc.helper.auth;
 
-import com.umc.helper.auth2.Token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

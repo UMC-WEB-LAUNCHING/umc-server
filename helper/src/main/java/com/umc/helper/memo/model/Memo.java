@@ -34,11 +34,11 @@ public class Memo {
 
     private LocalDateTime statusModifiedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="folder_id")
     private Folder folder;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="member_id")
     private Member member; // uploader
 

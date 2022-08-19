@@ -16,6 +16,7 @@ import com.umc.helper.member.model.PatchMemberInfoResponse;
 import com.umc.helper.member.model.PatchMemberNameRequest;
 import com.umc.helper.memo.MemoRepository;
 import com.umc.helper.team.exception.InvalidDeleteTeam;
+import com.umc.helper.team.exception.TeamNameEmptyException;
 import com.umc.helper.team.exception.TeamNotFoundException;
 import com.umc.helper.team.model.*;
 import lombok.RequiredArgsConstructor;
@@ -61,13 +62,25 @@ public class TeamService {
      */
     @Transactional
     public PostTeamResponse createTeam(PostTeamRequestList postTeamReq){
+
+        // 팀 이름 작성 여부 체크
+        if(postTeamReq.getTeamName()==null){
+            throw new TeamNameEmptyException();
+        }
+
         Team team=new Team();
         team.setName(postTeamReq.getTeamName());
 
         Optional<Member> creator=memberRepository.findById(postTeamReq.getCreatorId());
+        // 팀 생성자 존재 여부 체크
         if(creator.isEmpty()){
             throw new MemberNotFoundException();
         }
+
+        TeamMember tm=new TeamMember();
+        tm.setMember(creator.get());
+        tm.setTeam(team);
+        teamMemberRepository.save(tm);
 
         List<TeamMember> members=new ArrayList<>();
         List<String> memberNames=new ArrayList<>();
@@ -79,6 +92,7 @@ public class TeamService {
             TeamMember teamMember=new TeamMember();
             teamMember.setMember(memberRepository.findByEmail(member.getMemberEmail()).get());
             teamMember.setTeam(team);
+            teamMemberRepository.save(teamMember);
             members.add(teamMember);
 
             memberNames.add(memberRepository.findByEmail(member.getMemberEmail()).get().getUsername());
@@ -89,7 +103,7 @@ public class TeamService {
 
         teamRepository.save(team);
 
-        PostTeamResponse createdTeam=new PostTeamResponse(teamRepository.findById(team.getTeamIdx()).getName(),memberNames);
+        PostTeamResponse createdTeam=new PostTeamResponse(team.getCreator().getId(),teamRepository.findById(team.getTeamIdx()).getName(),memberNames);
 
         return createdTeam;
     }
@@ -125,6 +139,7 @@ public class TeamService {
      */
     @Transactional
     public PostTeamInvitationResponse inviteTeamMembers(PostTeamInvitationRequest postTeamInvitationReq){
+        // 팀 존재 여부 확인
         if(teamRepository.findById(postTeamInvitationReq.getTeamId())==null){
             throw new TeamNotFoundException();
         }

@@ -1,4 +1,4 @@
-package com.umc.helper.auth2;
+package com.umc.helper.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -76,6 +77,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
 //        http
 //                .authorizeRequests()
 //                .antMatchers("/api/members/signup", "/api/members/signin").permitAll()

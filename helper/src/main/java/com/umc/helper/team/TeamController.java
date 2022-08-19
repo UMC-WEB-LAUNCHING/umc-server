@@ -1,30 +1,54 @@
 package com.umc.helper.team;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.team.model.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @RestController
 @RequiredArgsConstructor
 public class TeamController {
 
     private final TeamService teamService;
-
+    Logger logger= LoggerFactory.getLogger(TeamController.class);
     /**
      * create team
      * @param postTeamReq
      * @return postTeamRes
      */
     @PostMapping("team")
-    public BaseResponse<PostTeamResponse> createTeam(@RequestBody  @Valid PostTeamRequestList postTeamReq){
-        PostTeamResponse postTeamRes=teamService.createTeam(postTeamReq);
+    public BaseResponse<PostTeamResponse> createTeam(@RequestBody PostTeamRequestList postTeamReq){
+        ObjectMapper mapper=new ObjectMapper();
 
+        PostTeamResponse postTeamRes=teamService.createTeam(postTeamReq);
+        logger.info("postTeamReq - creatorId: {}",postTeamReq.getCreatorId());
+        logger.info("postTeamReq - teamName: {}",postTeamReq.getTeamName());
+        for(PostTeamRequest member: postTeamReq.getMembers()){
+            logger.info("postTeamReq - teamMember:{}",member.getMemberEmail());
+        }
         return new BaseResponse<>(postTeamRes);
     }
+//    @PostMapping("team")
+//    public ResponseEntity<Object> createTeam(@RequestBody  @Valid PostTeamRequestList postTeamReq) throws URISyntaxException {
+//        PostTeamResponse postTeamRes=teamService.createTeam(postTeamReq);
+//        HttpHeaders httpHeaders=new HttpHeaders();
+//        httpHeaders.add("ACCESS_TOKEN","Dfd");
+//        URI redirect=new URI("localhost:8080/stomp/team");
+//
+//        httpHeaders.setLocation(redirect);
+//        return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
+//    }
 
     /**
      * retrieve teams

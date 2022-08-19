@@ -18,6 +18,8 @@ import com.umc.helper.memo.model.Memo;
 import com.umc.helper.trash.exception.RestoreInvalidUser;
 import com.umc.helper.trash.model.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,7 @@ public class TrashService {
 
     private final FileService fileService;
     private final ImageService imageService;
-
+    Logger logger= LoggerFactory.getLogger(TrashController.class);
     /**
      * 휴지통 조회
      */
@@ -118,6 +120,7 @@ public class TrashService {
                 category="link";
                 id=link.getId();
                 memberId=link.getMember().getId();
+                logger.info("deleting link");
                 bookmarkRepository.removeBookmarkLink(link.getId(),memberId);
                 linkRepository.remove(link);
             }
@@ -138,6 +141,66 @@ public class TrashService {
         }
 
         return result;
+    }
+
+    /**
+     *  휴지통 단일 선택 항목 삭제
+     */
+    @Transactional
+    public DeleteItemResponse deleteItem(String item_case,Long itemId,Long memberId){
+        logger.info("item_case: {}",item_case);
+        Member member=memberRepository.findById(memberId).get();
+        String category = null;
+        Long id = null;
+        String name=null;
+        if(item_case.equals("folder")){
+            Folder folder=folderRepository.findById(itemId);
+            category="folder";
+            id=folder.getId();
+            name=folder.getFolderName();
+            bookmarkRepository.removeBookmarkFolder(folder.getId(),memberId);
+            memoRepository.removeEveryByFolderId(folder.getId());
+            fileRepository.removeEveryByFolderId(folder.getId());
+            linkRepository.removeEveryByFolderId(folder.getId());
+            imageRepository.removeEveryByFolderId(folder.getId());
+        }
+        else if(item_case.equals("file")){
+            File file=fileRepository.findById(itemId);
+            category="file";
+            id=file.getId();
+            name= file.getOriginalFileName();
+            bookmarkRepository.removeBookmarkFile(file.getId(),memberId);
+            fileService.deleteFromS3(file.getFileName());
+            fileRepository.remove(file);
+        }
+        else if(item_case.equals("image")){
+            Image image=imageRepository.findById(itemId);
+            category="image";
+            id=image.getId();
+            name=image.getOriginalFileName();
+            bookmarkRepository.removeBookmarkImage(image.getId(),memberId);
+            imageService.deleteFromS3(image.getFileName());
+            imageRepository.remove(image);
+        }
+        else if(item_case.equals("link")){
+            logger.info("item case is link");
+            Link link=linkRepository.findById(itemId);
+            category="link";
+            id=link.getId();
+            name=link.getName();
+            bookmarkRepository.removeBookmarkLink(link.getId(),memberId);
+            linkRepository.remove(link);
+        }
+        else if(item_case.equals("memo")){
+            Memo memo=memoRepository.findById(itemId);
+            category="memo";
+            id=memo.getId();
+            name=memo.getName();
+            bookmarkRepository.removeBookmarkMemo(memo.getId(),memberId);
+            memoRepository.remove(memo);
+        }
+
+        return new DeleteItemResponse(category,id,name);
     }
 
     /**

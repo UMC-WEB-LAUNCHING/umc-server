@@ -9,10 +9,10 @@ import java.util.List;
 
 @Data @AllArgsConstructor @NoArgsConstructor
 public class PostTeamRequestList {
-    @Valid
+    //@Valid
     private Long creatorId;
-    @Valid
+    //@Valid
     private String teamName;
-    @Valid
+    //@Valid
     private List<PostTeamRequest> members;
 }

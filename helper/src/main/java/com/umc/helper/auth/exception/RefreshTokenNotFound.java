@@ -1,4 +1,4 @@
-package com.umc.helper.auth2.exception;
+package com.umc.helper.auth.exception;
 
 import com.umc.helper.config.BaseResponseStatus;
 import com.umc.helper.exception.BusinessException;

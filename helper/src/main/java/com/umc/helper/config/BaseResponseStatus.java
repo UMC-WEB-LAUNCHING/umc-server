@@ -62,7 +62,7 @@ public enum BaseResponseStatus {
     // team
     INVALID_DELETE_TEAM(false,2044,"팀을 삭제할 수 없는 유저입니다."),
     TEAM_EMPTY(false,2045,"존재하지 않는 팀입니다."),
-
+    TEAM_NAME_EMPTY(false,2046,"팀 이름을 입력해주세요."),
     //bookmark
     BOOKMARK_EMPTY(false,2050,"존재하지 않는 북마크입니다."),
 

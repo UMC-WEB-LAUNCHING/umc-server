@@ -1,4 +1,4 @@
-package com.umc.helper.alarm;
+package com.umc.helper.alarm.model;
 
 import com.umc.helper.folder.model.Folder;
 import com.umc.helper.member.model.Member;
@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="alarms")
@@ -29,5 +31,8 @@ public class Alarm {
     @JoinColumn(name="folder_id")
     private Folder folder;
 
-    private Boolean status;
+    private LocalDateTime uploadDate;
+    private LocalDateTime lastModifiedDate;
+
+    private Boolean status; // 알림 확인 여부
 }

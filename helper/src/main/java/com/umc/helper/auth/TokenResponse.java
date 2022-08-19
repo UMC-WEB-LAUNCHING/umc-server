@@ -1,4 +1,4 @@
-package com.umc.helper.auth2;
+package com.umc.helper.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

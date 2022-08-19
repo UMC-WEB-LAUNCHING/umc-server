@@ -2,7 +2,7 @@ package com.umc.helper.member;
 
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.member.model.*;
-import com.umc.helper.auth2.TokenResponse;
+import com.umc.helper.auth.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class MemberController {
      * @return tokenRes
      */
     @PostMapping("member/sign-in")
-    public BaseResponse<TokenResponse> signIn(@RequestBody @Valid  PostLoginRequest postLoginReq){
+    public BaseResponse<TokenResponse> signIn(@RequestBody @Valid  PostLoginRequest postLoginReq) throws Exception {
         TokenResponse tokenRes=memberService.signIn(postLoginReq);
 
         return new BaseResponse<>(tokenRes);

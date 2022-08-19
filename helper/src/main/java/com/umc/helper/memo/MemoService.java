@@ -90,9 +90,9 @@ public class MemoService {
         }
 
         // 폴더 내 동일 메모 이름 확인
-        if(memoRepository.findDuplicateMemoName(postMemoReq.getFolderId(),postMemoReq.getName())==1){
-            throw new MemoNameDuplicateException();
-        }
+//        if(memoRepository.findDuplicateMemoName(postMemoReq.getFolderId(),postMemoReq.getName())==1){
+//            throw new MemoNameDuplicateException();
+//        }
 
         // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
         if(folder.getMember()!=null) folder.invalidUploader(member.get().getId()); // 개인 폴더

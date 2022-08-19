@@ -1,5 +1,6 @@
 package com.umc.helper.trash;
 
+import com.amazonaws.services.dynamodbv2.model.DeleteItemRequest;
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.trash.model.*;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +40,18 @@ public class TrashController {
      * @return
      */
     @DeleteMapping("trash/item")
-    public BaseResponse<List<DeleteItemsResponse>> deleteItem(@RequestBody @Valid DeleteItemsRequestList deleteItemReqs){
+    public BaseResponse<List<DeleteItemsResponse>> deleteItems(@RequestBody @Valid DeleteItemsRequestList deleteItemReqs){
         List<DeleteItemsResponse> deletedItems=trashService.deleteItems(deleteItemReqs);
         logger.info(">delete selected trash");
 
         return new BaseResponse<>(deletedItems);
+    }
+    @DeleteMapping("trash/delete/{item_case}/{itemId}/{memberId}")
+    public BaseResponse<DeleteItemResponse> deleteItem(@PathVariable("item_case") String item_case, @PathVariable("itemId") Long itemId, @PathVariable("memberId") Long memberId){
+        logger.info("item_case: {}",item_case);
+        DeleteItemResponse deletedItem=trashService.deleteItem(item_case,itemId,memberId);
+
+        return new BaseResponse<>(deletedItem);
     }
 
     /**
