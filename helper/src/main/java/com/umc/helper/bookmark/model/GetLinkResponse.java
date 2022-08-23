@@ -16,4 +16,5 @@ public class GetLinkResponse {
     private String name;
     private Long folderId;
     private LocalDateTime uploadDate;
+    private String uploader;
 }

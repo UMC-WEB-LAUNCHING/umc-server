@@ -15,4 +15,6 @@ public class GetFileResponse {
     private Long folderId;
     private LocalDateTime uploadDate;
     private Long volume;
+    private String uploader;
+
 }

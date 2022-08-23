@@ -16,4 +16,6 @@ public class GetMemoResponse {
     //private Long uploaderId;
     private Long folderId;
     private LocalDateTime uploadDate;
+    private String uploader;
+
 }

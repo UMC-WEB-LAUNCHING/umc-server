@@ -74,7 +74,7 @@ public class BookmarkService {
         for(Bookmark bm:bookmarks){
             if(bm.getCategory().equals("file")){
                 File f=fileRepository.findById(bm.getFile().getId());
-                GetFileResponse gf=new GetFileResponse(f.getId(),f.getFilePath(),f.getOriginalFileName(),f.getFolder().getId(),f.getUploadDate(),f.getVolume());
+                GetFileResponse gf=new GetFileResponse(f.getId(),f.getFilePath(),f.getOriginalFileName(),f.getFolder().getId(),f.getUploadDate(),f.getVolume(),f.getMember().getUsername());
                 bookmarkResult.add(new GetBookmarksResponse(bm.getId(),"file",gf,null,null,gf.getUploadDate()));
             }
 //            else if(bm.getCategory().equals("folder")){
@@ -84,13 +84,13 @@ public class BookmarkService {
 //            }
             else if(bm.getCategory().equals("memo")){
                Memo m=memoRepository.findById(bm.getMemo().getId());
-                GetMemoResponse gm=new GetMemoResponse(m.getId(),m.getContent(),m.getName(),m.getFolder().getId(),m.getUploadDate());
+                GetMemoResponse gm=new GetMemoResponse(m.getId(),m.getContent(),m.getName(),m.getFolder().getId(),m.getUploadDate(),m.getMember().getUsername());
                 bookmarkResult.add(new GetBookmarksResponse(bm.getId(),"memo",null,null,gm,gm.getUploadDate()));
 
             }
             else if(bm.getCategory().equals("link")){
                 Link l=linkRepository.findById(bm.getLink().getId());
-                GetLinkResponse gl=new GetLinkResponse(l.getId(),l.getUrl(),l.getName(),l.getFolder().getId(),l.getUploadDate());
+                GetLinkResponse gl=new GetLinkResponse(l.getId(),l.getUrl(),l.getName(),l.getFolder().getId(),l.getUploadDate(),l.getMember().getUsername());
                 bookmarkResult.add(new GetBookmarksResponse(bm.getId(),"link",null,gl,null,gl.getUploadDate()));
             }
         }
