@@ -122,5 +122,12 @@ public class FileRepository {
                 .getResultList();
     }
 
+    public int removeByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from File f"+
+                                " where f.member.id= :memberId")
+                .setParameter("memberId",memberId)
+                .executeUpdate();
+    }
 
 }

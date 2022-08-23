@@ -27,6 +27,7 @@ public class GetFilesResponse implements Comparable<GetFilesResponse>{
         member_name=file.getMember().getUsername();
         folder_name=file.getFolder().getFolderName();
         lastModifiedDate=file.getLastModifiedDate();
+        volume=file.getVolume();
     }
 
     public GetFilesResponse(Long fileId,String filePath, String originalFileName, String member_name, String folderName, Long folderId,Long bookmarkId,LocalDateTime uploadDate,LocalDateTime lastModifiedDate,Long volume,String uploaderProfile){

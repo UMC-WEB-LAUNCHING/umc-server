@@ -114,4 +114,12 @@ public class LinkRepository {
                 .setParameter("folderId",folderId)
                 .executeUpdate();
     }
+
+    public int removeByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from Link l"+
+                                " where l.member.id= :memberId")
+                .setParameter("memberId",memberId)
+                .executeUpdate();
+    }
 }

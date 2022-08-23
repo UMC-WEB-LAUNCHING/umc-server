@@ -3,6 +3,7 @@ package com.umc.helper.member;
 import com.umc.helper.config.BaseResponse;
 import com.umc.helper.member.model.*;
 import com.umc.helper.auth.TokenResponse;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +113,14 @@ public class MemberController {
 
         return new BaseResponse<>(deleteLogoutRes);
     }
-    //TODO: 소셜 로그인
+
+    // 탈퇴
+    @DeleteMapping("member/withdraw/{memberId}")
+    public BaseResponse<Long> withdraw(@PathVariable("memberId") Long memberId){
+        Long memberIdx=memberService.withdraw(memberId);
+
+        return new BaseResponse<>(memberIdx);
+    }
+
 
 }

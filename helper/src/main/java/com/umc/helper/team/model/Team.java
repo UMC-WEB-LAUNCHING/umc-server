@@ -33,7 +33,7 @@ public class Team {
     @OneToMany(mappedBy = "team",cascade = CascadeType.ALL)
     private List<Folder> folders=new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="member_id")
     private Member creator; // 팀 생성한 사람(팀장)
 

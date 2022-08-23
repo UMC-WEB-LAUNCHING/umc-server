@@ -174,16 +174,17 @@ public class TeamService {
      */
     @Transactional
     public DeleteTeamResponse deleteTeam(Long teamId,Long deletingId){
-
+        logger.info("deletingId: {}",deletingId);
         Team team=teamRepository.findById(teamId);
         team.notExistTeam(); // 팀 존재 확인
-
-        if(team.getCreator().getId()!=deletingId){ // 팀 생성자와 팀 삭제 시도 유저 idx 비교
+        logger.info("team creator id: {}",team.getCreator().getId());
+        logger.info("team idx: {}",team.getTeamIdx());
+        logger.info("team name: {}",team.getName());
+        Long creatorId=team.getCreator().getId();
+        logger.info("compare :{}",creatorId.compareTo(deletingId));
+        if(creatorId.compareTo(deletingId)!=0){ // 팀 생성자와 팀 삭제 시도 유저 idx 비교
             throw new InvalidDeleteTeam();
         }
-
-        teamMemberRepository.removeTeamMemberByTeamId(teamId);
-        teamRepository.removeTeamByTeamId(teamId);
 
         List<Folder> folders=folderRepository.findEveryByTeamId(teamId); // 팀 폴더 조회
         for(Folder folder :folders) {                    // 폴더 내 모든 데이터 삭제
@@ -195,7 +196,8 @@ public class TeamService {
 
         folderRepository.removeFolderByTeamId(teamId); // 팀 폴더 모두 삭제
 
-
+        teamMemberRepository.removeTeamMemberByTeamId(teamId);
+        teamRepository.removeTeamByTeamId(teamId);
         return new DeleteTeamResponse(teamId);
     }
 

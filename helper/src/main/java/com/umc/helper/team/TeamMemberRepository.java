@@ -43,6 +43,13 @@ public class TeamMemberRepository {
                 .setParameter("teamId",teamId)
                 .executeUpdate();
     }
+    public int removeTeamMemberByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from TeamMember tm"+
+                                " where tm.member.id= :memberId")
+                .setParameter("memberId",memberId)
+                .executeUpdate();
+    }
 
     public int removeTeamMemberByMemberTeamId(Long memberId,Long teamId){
         return em.createQuery(

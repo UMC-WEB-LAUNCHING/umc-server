@@ -4,16 +4,22 @@ import com.umc.helper.bookmark.BookmarkRepository;
 import com.umc.helper.file.FileRepository;
 import com.umc.helper.file.FileService;
 import com.umc.helper.file.model.File;
+import com.umc.helper.file.model.GetFilesResponse;
 import com.umc.helper.folder.FolderRepository;
 import com.umc.helper.folder.model.Folder;
+import com.umc.helper.folder.model.GetFoldersResponse;
 import com.umc.helper.image.ImageRepository;
 import com.umc.helper.image.ImageService;
+import com.umc.helper.image.model.GetImagesResponse;
 import com.umc.helper.image.model.Image;
 import com.umc.helper.link.LinkRepository;
+import com.umc.helper.link.model.GetLinksResponse;
 import com.umc.helper.link.model.Link;
+import com.umc.helper.mainpage.model.GetItemResponse;
 import com.umc.helper.member.MemberRepository;
 import com.umc.helper.member.model.Member;
 import com.umc.helper.memo.MemoRepository;
+import com.umc.helper.memo.model.GetMemosResponse;
 import com.umc.helper.memo.model.Memo;
 import com.umc.helper.trash.exception.RestoreInvalidUser;
 import com.umc.helper.trash.model.*;
@@ -47,34 +53,48 @@ public class TrashService {
     private final FileService fileService;
     private final ImageService imageService;
     Logger logger= LoggerFactory.getLogger(TrashController.class);
+
     /**
      * 휴지통 조회
      */
     @Transactional
     public List<GetTrashResponse> retrieveTrash(Long memberId){
 
-        List<Memo> getMemoTrash=memoRepository.findTrashByMemberId(memberId);
-        List<GetTrashResponse> result=getMemoTrash.stream()
-                .map(m->new GetTrashResponse(m))
-                .collect(toList());
+        List<GetTrashResponse> allTrash=new ArrayList<>();
 
+        List<Memo> getMemoTrash=memoRepository.findTrashByMemberId(memberId);
+        for(Memo memo:getMemoTrash){
+            GetMemosResponse m=new GetMemosResponse(memo);
+            allTrash.add(new GetTrashResponse(memo.getStatusModifiedDate(),"memo",m,null,null,null,null));
+        }
+        logger.info("trash memo size: {}",allTrash.size());
         List<File> getFileTrash=fileRepository.findTrashByMemberId(memberId);
-        for(File f:getFileTrash){
-            result.add(new GetTrashResponse(f));
+        for(File file:getFileTrash){
+            GetFilesResponse f=new GetFilesResponse(file);
+            allTrash.add(new GetTrashResponse(file.getStatusModifiedDate(),"file",null,f,null,null,null));
         }
 
         List<Image> getImageTrash=imageRepository.findTrashByMemberId(memberId);
-        for(Image i:getImageTrash){
-            result.add(new GetTrashResponse(i));
+        for(Image image:getImageTrash){
+            GetImagesResponse i=new GetImagesResponse(image);
+            allTrash.add(new GetTrashResponse(image.getStatusModifiedDate(),"image",null,null,null,i,null));
         }
 
         List<Link> getLinkTrash=linkRepository.findTrashByMemberId(memberId);
-        for(Link l:getLinkTrash){
-            result.add(new GetTrashResponse(l));
+        for(Link link:getLinkTrash){
+            GetLinksResponse l=new GetLinksResponse(link);
+            allTrash.add(new GetTrashResponse(link.getStatusModifiedDate(),"link",null,null,l,null,null));
         }
-        Collections.sort(result);
 
-        return result;
+        List<Folder> getFolderTrash=folderRepository.findTrashByMemberId(memberId);
+        for(Folder folder:getFolderTrash){
+            GetFoldersResponse f=new GetFoldersResponse(folder);
+            allTrash.add(new GetTrashResponse(folder.getStatusModifiedDate(),"folder",null,null,null,null,f));
+        }
+        logger.info("allTrash size: {}",allTrash.size());
+        Collections.sort(allTrash);
+
+        return allTrash;
     }
 
     /**

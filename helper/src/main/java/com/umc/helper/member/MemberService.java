@@ -12,10 +12,16 @@ import com.umc.helper.auth.exception.RefreshTokenNotFound;
 import com.umc.helper.auth.oauth.GoogleOauth;
 import com.umc.helper.auth.oauth.GoogleUser;
 import com.umc.helper.auth.oauth.OAuthToken;
+import com.umc.helper.file.FileRepository;
+import com.umc.helper.folder.FolderRepository;
+import com.umc.helper.link.LinkRepository;
 import com.umc.helper.member.exception.EmailDuplicateException;
 import com.umc.helper.member.exception.MemberEmailException;
 import com.umc.helper.member.exception.MemberPasswordException;
 import com.umc.helper.member.model.*;
+import com.umc.helper.memo.MemoRepository;
+import com.umc.helper.team.TeamMemberRepository;
+import com.umc.helper.team.TeamRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +53,13 @@ public class MemberService {
 
     private final AmazonS3Client amazonS3Client;
 
+    private final LinkRepository linkRepository;
+    private final FileRepository fileRepository;
+    private final FolderRepository folderRepository;
+    private final MemoRepository memoRepository;
+    private final TeamMemberRepository teamMemberRepository;
+
+    private final TeamRepository teamRepository;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -280,7 +293,10 @@ public class MemberService {
 
     }
 
-    // 로그아웃
+    /**
+     * 로그아웃
+     * TODO: 수정필요
+     */
     @Transactional
     public int logout(Long memberId){
         int count=tokenRepository.removeTokenByMemberId(memberId);
@@ -288,7 +304,9 @@ public class MemberService {
         return count;
     }
 
-    // 소셜 로그인
+    /**
+     * 소셜 로그인
+     */
     public TokenResponse oauthLogin(String code)  {
         ResponseEntity<String> accessTokenResponse = googleOauthService.requestAccessToken(code);
         OAuthToken oAuthToken = googleOauthService.getAccessToken(accessTokenResponse);
@@ -333,5 +351,22 @@ public class MemberService {
         tokenRepository.save(token);
 
 
+    }
+
+    // 탈퇴 TODO: team, link, folder, file, memo, bookmark, trash, teamMember 다 삭제
+    @Transactional
+    public Long withdraw(Long memberId){
+        Member member=memberRepository.findById(memberId).get();
+        logger.info("tokenId: {}",tokenRepository.findByMemberId(member.getId()).getId());
+
+//        linkRepository.removeByMemberId(member.getId());
+//        fileRepository.removeByMemberId(member.getId());
+//        memoRepository.removeByMemberId(member.getId());
+//        folderRepository.removeByMemberId(member.getId());
+//        teamMemberRepository.removeTeamMemberByMemberId(member.getId());
+//        tokenRepository.removeTokenByMemberId(member.getId());
+//        memberRepository.delete(member);
+
+        return member.getId();
     }
 }

@@ -93,9 +93,9 @@ public class LinkService {
         }
 
         // 폴더 내 동일 링크 이름 확인
-        if(linkRepository.findDuplicateLinkName(postLinkReq.getFolderId(),postLinkReq.getName())==1){
-            throw new LinkNameDuplicateException();
-        }
+//        if(linkRepository.findDuplicateLinkName(postLinkReq.getFolderId(),postLinkReq.getName())==1){
+//            throw new LinkNameDuplicateException();
+//        }
 
         // 폴더 내 업로드 권한 확인 TODO: 코드 리팩토링 필요
         if(folder.getMember()!=null) folder.invalidUploader(member.get().getId()); // 개인 폴더

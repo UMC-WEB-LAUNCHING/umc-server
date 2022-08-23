@@ -2,11 +2,18 @@ package com.umc.helper.trash.model;
 
 import com.umc.helper.file.model.File;
 import com.umc.helper.file.model.GetFilesResponse;
+import com.umc.helper.folder.model.Folder;
+import com.umc.helper.folder.model.GetFoldersResponse;
+import com.umc.helper.image.model.GetImagesResponse;
 import com.umc.helper.image.model.Image;
+import com.umc.helper.link.model.GetLinksResponse;
 import com.umc.helper.link.model.Link;
+import com.umc.helper.memo.model.GetMemosResponse;
 import com.umc.helper.memo.model.Memo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,51 +23,28 @@ import java.time.LocalDateTime;
 public class GetTrashResponse implements Comparable<GetTrashResponse>{
 
     private String category;
-    private Long memoId;
-    private Long fileId;
-    private Long imageId;
-    private Long linkId;
-    private Long folderId;
+    private GetMemosResponse memo;
+    private GetFilesResponse file;
+    private GetLinksResponse link;
+    private GetImagesResponse image;
+    private GetFoldersResponse folder;
     private String memberName;
     private LocalDateTime modifiedStatusDate;
 
-    public GetTrashResponse(String category, Long memoId,Long fileId, Long imageId, Long linkId,String memberName){
-        this.category=category;
-        this.memoId=memoId;
-        this.fileId=fileId;
-        this.imageId=imageId;
-        this.linkId=linkId;
-        this.memberName=memberName;
-    }
+    //Logger logger= LoggerFactory.getLogger(GetTrashResponse.class);
 
-    public GetTrashResponse(Memo memo){
-        this.category="memo";
-        this.memoId=memo.getId();
-        this.memberName=memo.getMember().getUsername();
-        this.modifiedStatusDate=memo.getStatusModifiedDate();
-    }
-    public GetTrashResponse(File file){
-        this.category="file";
-        this.fileId=file.getId();
-        this.memberName=file.getMember().getUsername();
-        this.modifiedStatusDate=file.getStatusModifiedDate();
-
-    }
-    public GetTrashResponse(Image image){
-        this.category="image";
-        this.imageId=image.getId();
-        this.memberName=image.getMember().getUsername();
-        this.modifiedStatusDate=image.getStatusModifiedDate();
-
-    }
-    public GetTrashResponse(Link link){
-        this.category="link";
-        this.linkId=link.getId();
-        this.memberName=link.getMember().getUsername();
-        this.modifiedStatusDate=link.getStatusModifiedDate();
-    }
+   public GetTrashResponse(LocalDateTime modifiedStatusDate,String category, GetMemosResponse memo,GetFilesResponse file,GetLinksResponse link,GetImagesResponse image,GetFoldersResponse folder){
+       this.modifiedStatusDate=modifiedStatusDate;
+       this.category=category;
+       this.memo=memo;
+       this.file=file;
+       this.link=link;
+       this.image=image;
+       this.folder=folder;
+   }
 
     public int compareTo(GetTrashResponse getTrashResponse){
+       //logger.info("modifiedStatusDate: {}",getTrashResponse.modifiedStatusDate);
         if(getTrashResponse.getModifiedStatusDate().compareTo(this.getModifiedStatusDate())==1){
             return 1;
         }

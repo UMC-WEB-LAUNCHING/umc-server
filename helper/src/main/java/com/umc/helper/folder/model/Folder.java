@@ -33,12 +33,12 @@ public class Folder {
 
     private LocalDateTime lastModifiedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="member_id")
     private Member member;
 
     private Long creatorId;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="team_id")
     private Team team;
 

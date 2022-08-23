@@ -2,6 +2,7 @@ package com.umc.helper.trash;
 
 import com.amazonaws.services.dynamodbv2.model.DeleteItemRequest;
 import com.umc.helper.config.BaseResponse;
+import com.umc.helper.mainpage.model.GetItemResponse;
 import com.umc.helper.trash.model.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

@@ -108,6 +108,12 @@ public class FolderRepository {
                 .setParameter("teamId",teamId)
                 .executeUpdate();
     }
-
+    public int removeByMemberId(Long memberId){
+        return em.createQuery(
+                        "delete from Folder f"+
+                                " where f.creatorId= :memberId")
+                .setParameter("memberId",memberId)
+                .executeUpdate();
+    }
 
 }
