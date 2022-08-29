@@ -49,7 +49,7 @@ public class MemoRepository {
     }
     public List<GetMemosResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,bm.id,m.uploadDate,m.lastModifiedDate,m.member.profileImage)"+
+                "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,f.id,bm.id,m.uploadDate,m.lastModifiedDate,m.member.profileImage)"+
                         " from Memo m"+
                         " join m.folder f"+
                         " left join Bookmark bm"+
@@ -62,7 +62,7 @@ public class MemoRepository {
     }
     public List<GetMemosResponse> findAllInfoByFolderIds(List<Long> folderIds){
         return em.createQuery(
-                        "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,bm.id,m.uploadDate,m.lastModifiedDate,m.member.profileImage)"+
+                        "select new com.umc.helper.memo.model.GetMemosResponse(m.id,m.name,m.content,m.member.username,f.folderName,f.id,bm.id,m.uploadDate,m.lastModifiedDate,m.member.profileImage)"+
                                 " from Memo m"+
                                 " join m.folder f"+
                                 " left join Bookmark bm"+

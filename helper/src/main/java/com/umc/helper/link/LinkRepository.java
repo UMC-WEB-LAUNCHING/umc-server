@@ -40,7 +40,7 @@ public class LinkRepository {
 
     public List<GetLinksResponse> findAllInfoByFolderId(Long folderId){
         return em.createQuery(
-                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,bm.id,l.uploadDate,l.lastModifiedDate,l.member.profileImage)"+
+                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,f.id,bm.id,l.uploadDate,l.lastModifiedDate,l.member.profileImage)"+
                                 " from Link l"+
                                 " join l.folder f"+
                                 " left join Bookmark bm"+
@@ -53,7 +53,7 @@ public class LinkRepository {
     }
     public List<GetLinksResponse> findAllInfoByFolderIds(List<Long> folderIds){
         return em.createQuery(
-                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,bm.id,l.uploadDate,l.lastModifiedDate,l.member.profileImage)"+
+                        "select new com.umc.helper.link.model.GetLinksResponse(l.id,l.url,l.name,l.member.username,f.folderName,f.id,bm.id,l.uploadDate,l.lastModifiedDate,l.member.profileImage)"+
                                 " from Link l"+
                                 " join l.folder f"+
                                 " left join Bookmark bm"+

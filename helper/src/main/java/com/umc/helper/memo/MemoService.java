@@ -125,7 +125,7 @@ public class MemoService {
         Folder folder=folderRepository.findById(memo.getFolder().getId());
 
         // 메모 올린 사람과 메모 수정하고자 하는 사람이 같아야만 수정
-        if(memo.getMember().getId()==patchMemoRequest.getMemberId()){
+        if(memo.getMember().getId().compareTo(patchMemoRequest.getMemberId())==0){
             memo.setName(patchMemoRequest.getName());
             memo.setContent(patchMemoRequest.getContent());
             memo.setLastModifiedDate(LocalDateTime.now());
@@ -148,7 +148,7 @@ public class MemoService {
         Folder folder=folderRepository.findById(memo.getFolder().getId());
 
         // 메모 올린 사람과 메모 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
-        if(memo.getMember().getId()==memberId) {
+        if(memo.getMember().getId().compareTo(memberId)==0) {
             memo.setStatus(Boolean.FALSE);
             memo.setStatusModifiedDate(LocalDateTime.now());
             folder.setLastModifiedDate(memo.getStatusModifiedDate());

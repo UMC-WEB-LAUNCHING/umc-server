@@ -9,8 +9,6 @@ import javax.validation.Valid;
 @Data
 @NoArgsConstructor @AllArgsConstructor
 public class PatchLinkRequest {
-    @Valid
     private String name; // 바꿀 링크 제목
-    @Valid
     private Long memberId; // 변경하고자 하는 사람 id
 }

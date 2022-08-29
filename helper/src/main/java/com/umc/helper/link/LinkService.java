@@ -128,14 +128,19 @@ public class LinkService {
 
         Folder folder=folderRepository.findById(link.getFolder().getId());
 
+        log.info("folderId: {}",folder.getId());
+        log.info("memberId: {}",link.getMember().getId());
         // 링크 올린 사람과 링크 수정하고자 하는 사람이 같아야만 수정
-        if(link.getMember().getId()==patchLinkRequest.getMemberId()){
+        if(link.getMember().getId().compareTo(patchLinkRequest.getMemberId())==0){
+            log.info("want to change title: {}",patchLinkRequest.getName());
             link.setName(patchLinkRequest.getName());
             link.setLastModifiedDate(LocalDateTime.now());
             folder.setLastModifiedDate(LocalDateTime.now());
         }
 
+        //linkRepository.save(link);
 
+        log.info("link title: {}",link.getName());
         return new PatchLinkResponse(link);
     }
 
@@ -154,7 +159,7 @@ public class LinkService {
         Folder folder=folderRepository.findById(link.getFolder().getId());
 
         // 링크 올린 사람과 링크 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
-        if(link.getMember().getId()==memberId) {
+        if(link.getMember().getId().compareTo(memberId)==0) {
             link.setStatus(Boolean.FALSE);
             link.setStatusModifiedDate(LocalDateTime.now());
             folder.setLastModifiedDate(link.getStatusModifiedDate());

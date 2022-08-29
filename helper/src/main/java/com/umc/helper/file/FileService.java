@@ -174,7 +174,7 @@ public class FileService {
         Folder folder=folderRepository.findById(file.getFolder().getId());
 
         // 파일 올린 사람과 파일 수정하고자 하는 사람이 같아야만 쓰레기통에 삭제 가능
-        if(file.getMember().getId()==memberId) {
+        if(file.getMember().getId().compareTo(memberId)==0) {
             file.setStatus(Boolean.FALSE);
             file.setStatusModifiedDate(LocalDateTime.now());
             folder.setLastModifiedDate(file.getStatusModifiedDate());
@@ -242,7 +242,7 @@ public class FileService {
 
         Folder folder=folderRepository.findById(file.getFolder().getId());
 
-        if(file.getMember().getId()==patchFileReq.getMemberId()){
+        if(file.getMember().getId().compareTo(patchFileReq.getMemberId())==0){
             file.setOriginalFileName(patchFileReq.getName());
             file.setLastModifiedDate(LocalDateTime.now());
             folder.setLastModifiedDate(file.getLastModifiedDate());

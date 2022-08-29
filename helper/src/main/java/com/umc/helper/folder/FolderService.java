@@ -108,7 +108,7 @@ public class FolderService {
         Folder folder=folderRepository.findById(folder_id);
 
         // 폴더 생성한 사람과 폴더를 휴지통으로 버리고 싶은 사람이 같아야만 휴지통에 삭제 가능
-        if(folder.getCreatorId()==creator_id){
+        if(folder.getCreatorId().compareTo(creator_id)==0){
             folder.setStatus(Boolean.FALSE);
             folder.setStatusModifiedDate(LocalDateTime.now());
         }

@@ -57,7 +57,7 @@ public class LinkController {
      * @return modifiedLink
      */
     @PatchMapping("folder/link/{linkId}")
-    public BaseResponse<PatchLinkResponse> modifyLink(@PathVariable("linkId") @Valid  Long linkId, @RequestBody @Valid  PatchLinkRequest patchLinkRequest){
+    public BaseResponse<PatchLinkResponse> modifyLink(@PathVariable("linkId") Long linkId, @RequestBody PatchLinkRequest patchLinkRequest){
 
         PatchLinkResponse modifiedLink=linkService.modifyLink(linkId,patchLinkRequest);
 

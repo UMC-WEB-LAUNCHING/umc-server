@@ -211,36 +211,36 @@ public class MainPageService {
         List<GetFilesResponse> teamFiles=fileRepository.findAllInfoByFolderIds(teamFolderIds);
         for(GetFilesResponse teamFile:teamFiles){
             logger.info("teamFile lastModifiedDate");
-            items.add(new GetItemResponse(teamFile.getLastModifiedDate(),"file",teamFile,null,null,null));
+            items.add(new GetItemResponse(teamFile.getLastModifiedDate(),"file", teamFile.getFolderId(), teamFile,null,null,null));
         }
-        List<GetImagesResponse> teamImages=imageRepository.findAllInfoByFolderIds(teamFolderIds);
-        for(GetImagesResponse teamImage:teamImages){
-            items.add(new GetItemResponse(teamImage.getLastModifiedDate(),"image",null,null,null,teamImage));
-        }
+//        List<GetImagesResponse> teamImages=imageRepository.findAllInfoByFolderIds(teamFolderIds);
+//        for(GetImagesResponse teamImage:teamImages){
+//            items.add(new GetItemResponse(teamImage.getLastModifiedDate(),"image",null,null,null,teamImage));
+//        }
         List<GetMemosResponse>teamMemos=memoRepository.findAllInfoByFolderIds(teamFolderIds);
         for(GetMemosResponse teamMemo:teamMemos){
-            items.add(new GetItemResponse(teamMemo.getLastModifiedDate(),"memo",null,null,teamMemo,null));
+            items.add(new GetItemResponse(teamMemo.getLastModifiedDate(),"memo",teamMemo.getFolderId(),null,null,teamMemo,null));
         }
         List<GetLinksResponse> teamLinks=linkRepository.findAllInfoByFolderIds(teamFolderIds);
         for(GetLinksResponse teamLink:teamLinks){
-            items.add(new GetItemResponse(teamLink.getLastModifiedDate(),"link",null,teamLink,null,null));
+            items.add(new GetItemResponse(teamLink.getLastModifiedDate(),"link", teamLink.getFolderId(), null,teamLink,null,null));
         }
 
         List<GetFilesResponse> myFiles=fileRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetFilesResponse myFile:myFiles){
-            items.add(new GetItemResponse(myFile.getLastModifiedDate(),"file",myFile,null,null,null));
+            items.add(new GetItemResponse(myFile.getLastModifiedDate(),"file",myFile.getFolderId(),myFile,null,null,null));
         }
-        List<GetImagesResponse> myImages=imageRepository.findAllInfoByFolderIds(myFolderIds);
-        for(GetImagesResponse myImage:myImages){
-            items.add(new GetItemResponse(myImage.getLastModifiedDate(),"image",null,null,null,myImage));
-        }
+//        List<GetImagesResponse> myImages=imageRepository.findAllInfoByFolderIds(myFolderIds);
+//        for(GetImagesResponse myImage:myImages){
+//            items.add(new GetItemResponse(myImage.getLastModifiedDate(),"image",null,null,null,myImage));
+//        }
         List<GetMemosResponse> myMemos=memoRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetMemosResponse myMemo:myMemos){
-            items.add(new GetItemResponse(myMemo.getLastModifiedDate(),"memo",null,null,myMemo,null));
+            items.add(new GetItemResponse(myMemo.getLastModifiedDate(),"memo",myMemo.getFolderId(),null,null,myMemo,null));
         }
         List<GetLinksResponse> myLinks=linkRepository.findAllInfoByFolderIds(myFolderIds);
         for(GetLinksResponse myLink:myLinks){
-            items.add(new GetItemResponse(myLink.getLastModifiedDate(),"link",null,myLink,null,null));
+            items.add(new GetItemResponse(myLink.getLastModifiedDate(),"link", myLink.getFolderId(), null,myLink,null,null));
         }
 
         logger.info("teamFiles size: {}",teamFiles.size());

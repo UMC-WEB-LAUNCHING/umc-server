@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class GetItemResponse implements Comparable<GetItemResponse>{
     private LocalDateTime lastModifiedDate;
     private String category;
+    private Long folderId;
     private GetFilesResponse file;
     private GetLinksResponse link;
     private GetMemosResponse memo;
