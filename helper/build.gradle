@@ -20,11 +20,41 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	implementation 'mysql:mysql-connector-java' // MySql
+//	 https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+	implementation 'org.springframework.boot:spring-boot-starter-security:2.6.8'
+
+//	 https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.6'
+
+//	 https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'mysql:mysql-connector-java'
+
+// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-tomcat
+	implementation 'org.springframework.boot:spring-boot-starter-tomcat:2.7.0'
+
+	//implementation 'io.jsonwebtoken:jjwt:0.9.1'// jwt
+
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-websocket' // web socket
+	implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1' // stomp
+	implementation 'com.google.code.gson:gson:2.9.0' // gson
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' // aws 접근
+	implementation 'com.amazonaws:aws-java-sdk:1.11.404'
 }
 
 tasks.named('test') {
